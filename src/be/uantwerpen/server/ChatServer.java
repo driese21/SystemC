@@ -51,22 +51,26 @@ public class ChatServer extends UnicastRemoteObject implements IChatServer {
     }
 
     @Override
-    public IClientSession register(String username, String password) throws RemoteException, AlreadyBoundException, InvalidCredentialsException {
+    public IClientSession register(String username, String password, String fullName) throws RemoteException, AlreadyBoundException, InvalidCredentialsException {
         Client c = clients.get(username);
         if (c != null) {
             System.out.println("Client already exists, logging in instead.");
             return login(username, password);
         }
-        c = new Client(username, password);
+        c = new Client(username, password, fullName);
         //if client does not exist, add him
-        clients.put(username, c);
-        System.out.println(username + " registered, logging in automatically.");
-        return login(username, password);
+        clients.put(c.getUsername(), c);
+        System.out.println(c.toString() + " registered, logging in automatically.");
+        return login(c.getUsername(), password);
     }
 
     @Override
     public IClientSession login(String username, String password) throws RemoteException, AlreadyBoundException, InvalidCredentialsException {
+        System.out.println(username);
         Client c = clients.get(username);
+        for (Client cl : clients.values()) {
+            System.out.println(cl.toString());
+        }
         if (c == null) {
             System.out.println("Client is null, try registering instead.");
             return null;
