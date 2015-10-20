@@ -7,7 +7,6 @@ import be.uantwerpen.rmiInterfaces.IChatServer;
 import be.uantwerpen.rmiInterfaces.IClientSession;
 
 import java.rmi.AlreadyBoundException;
-import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
@@ -59,11 +58,6 @@ public class ChatServer extends UnicastRemoteObject implements IChatServer {
             return login(username, password);
         }
         c = new Client(username, password);
-        /*for(Client c : clients) if (c.getUsername().equalsIgnoreCase(username)) {
-            //client already exists
-            System.out.println("Client already exists....");
-            return login(username, password);
-        }*/
         //if client does not exist, add him
         clients.put(username, c);
         System.out.println(username + " registered, logging in automatically.");
@@ -93,46 +87,17 @@ public class ChatServer extends UnicastRemoteObject implements IChatServer {
                 return cs;
             }
         } else throw new InvalidCredentialsException("User provided invalid credentials.");
-        /*for (Client cl : clients) {
-            if (cl.getUsername().equalsIgnoreCase(username) && cl.getPassword().equalsIgnoreCase(password)) {
-                c = cl;
-                break;
-            }
-        }*/
-        /*if (c == null) return null; //client does not exist, can't login, most likely wrong credentials
-        for (ClientSession cs : onlineClients) {
-            if (cs.getUsername().equalsIgnoreCase(username)) return cs;
-        }
-        //int nextPort = getNextPort();
-        ClientSession newSession = new ClientSession(username);
-        onlineClients.add(newSession); //should still check if no active session
-        Registry registry = LocateRegistry.createRegistry(11338);
-        registry.bind("ClientSession-"+username.hashCode(), newSession);
-        System.out.println( username + " logged in and created session on port " + 11338);
-        System.out.println(onlineClients.size());
-        return newSession; //return the session to the client*/
     }
 
     @Override
     public Client search(String username, boolean online) throws ClientNotOnlineException {
         Client other = clients.get(username);
-        /*for (Client c : clients) {
-            if (c.getUsername().equalsIgnoreCase(username)) {
-                other = c;
-                break;
-            }
-        }*/
         if (other == null) return null;
         if (online) {
             ClientSession cs = onlineClients.get(username);
             if (cs == null) throw new ClientNotOnlineException("You're looking for online clients, but " + username + " is not online.");
         }
         return other;
-        /*if (online) { //look only for online users
-            for (ClientSession cs : onlineClients) if (cs.getUsername().equalsIgnoreCase(username)) return other;
-        }
-        //return other user
-        return other;*/
     }
 
     @Override
@@ -142,12 +107,9 @@ public class ChatServer extends UnicastRemoteObject implements IChatServer {
             try {
                 otherUsers.add(search(cs.getUsername(), online));
             } catch (ClientNotOnlineException cnoe) {
-                //doesn't matter
+                //doesn't matter at this point
             }
         }
-        /*if (online) {
-            for (ClientSession cs : onlineClients) otherUsers.add(search(cs.getUsername(), true));
-        }*/
         return otherUsers;
     }
 
@@ -159,12 +121,6 @@ public class ChatServer extends UnicastRemoteObject implements IChatServer {
 
     public boolean addFriend(String username, String friendUserName) {
         Client friend = clients.get(friendUserName);
-        /*for (Client c : clients) {
-            if (c.getUsername().equalsIgnoreCase(friendUserName)) {
-                friend = c;
-                break;
-            }
-        }*/
         if (friend == null) return false; //user trying to add does not exist
         //other user exists, we can continue
         ArrayList<Client> cfriends = userFriends.get(username);
