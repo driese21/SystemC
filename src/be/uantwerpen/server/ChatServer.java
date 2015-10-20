@@ -113,15 +113,6 @@ public class ChatServer extends UnicastRemoteObject implements IChatServer {
         return newSession; //return the session to the client*/
     }
 
-    /*private int getNextPort() {
-        if (onlineClients == null) return 11340; //default next
-        int portToUse = 11341;
-        for (ClientSession cs : onlineClients) {
-            if (cs.getPort() == portToUse) portToUse++;
-        }
-        return portToUse;
-    }*/
-
     @Override
     public Client search(String username, boolean online) throws ClientNotOnlineException {
         Client other = clients.get(username);
