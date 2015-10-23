@@ -4,6 +4,7 @@ import be.uantwerpen.client.Client;
 import be.uantwerpen.exceptions.ClientNotOnlineException;
 import be.uantwerpen.exceptions.InvalidCredentialsException;
 import be.uantwerpen.rmiInterfaces.IChatServer;
+import be.uantwerpen.rmiInterfaces.IChatSession;
 import be.uantwerpen.rmiInterfaces.IClientSession;
 
 import java.rmi.AlreadyBoundException;
@@ -93,18 +94,7 @@ public class ChatServer extends UnicastRemoteObject implements IChatServer {
         } else throw new InvalidCredentialsException("User provided invalid credentials.");
     }
 
-    @Override
-    public Client search(String username, boolean online) throws ClientNotOnlineException {
-        Client other = clients.get(username);
-        if (other == null) return null;
-        if (online) {
-            ClientSession cs = onlineClients.get(username);
-            if (cs == null) throw new ClientNotOnlineException("You're looking for online clients, but " + username + " is not online.");
-        }
-        return other;
-    }
-
-    @Override
+    /*@Override
     public ArrayList<Client> search(boolean online) {
         ArrayList<Client> otherUsers = new ArrayList<>();
         for (ClientSession cs : onlineClients.values()) {
@@ -115,13 +105,13 @@ public class ChatServer extends UnicastRemoteObject implements IChatServer {
             }
         }
         return otherUsers;
-    }
+    }*/
 
-    public ArrayList<String> getOtherUsers() {
-        ArrayList<String> otherUsers = new ArrayList<>();
+    /*public ArrayList<String> getOtherUsers() {
+        ArrayList<String> otherUsers = clients.values();
         for (Client c : search(true)) otherUsers.add(c.getUsername());
         return otherUsers;
-    }
+    }*/
 
     public boolean addFriend(String username, String friendUserName) {
         Client friend = clients.get(friendUserName);
@@ -158,5 +148,13 @@ public class ChatServer extends UnicastRemoteObject implements IChatServer {
         cfriends.remove(friendToDelete); //remove friend
         userFriends.put(userName, cfriends); //update with new list
         return true; //everything okay
+    }
+
+    public HashMap<String, Client> getClients() {
+        return clients;
+    }
+
+    public HashMap<String, ClientSession> getOnlineClients() {
+        return onlineClients;
     }
 }
