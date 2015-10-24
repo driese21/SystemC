@@ -3,6 +3,7 @@ package be.uantwerpen.server;
 import be.uantwerpen.client.Client;
 import be.uantwerpen.exceptions.ClientNotOnlineException;
 import be.uantwerpen.exceptions.InvalidCredentialsException;
+import be.uantwerpen.rmiInterfaces.IChatParticipator;
 import be.uantwerpen.rmiInterfaces.IChatServer;
 import be.uantwerpen.rmiInterfaces.IChatSession;
 import be.uantwerpen.rmiInterfaces.IClientSession;
@@ -23,6 +24,7 @@ public class ChatServer extends UnicastRemoteObject implements IChatServer {
     private HashMap<String, Client> clients;
     private HashMap<String, ArrayList<Client>> userFriends;
     private HashMap<String, ClientSession> onlineClients;
+    private HashMap<IChatSession, IChatParticipator> chatSessions;
 
     public static ChatServer getInstance() throws RemoteException {
         if (instance == null) instance = new ChatServer();
@@ -34,6 +36,7 @@ public class ChatServer extends UnicastRemoteObject implements IChatServer {
         this.clients = new HashMap<>();
         this.userFriends = new HashMap<>();
         this.onlineClients = new HashMap<>();
+        this.chatSessions = new HashMap<>();
     }
 
     @Override
@@ -148,6 +151,15 @@ public class ChatServer extends UnicastRemoteObject implements IChatServer {
         cfriends.remove(friendToDelete); //remove friend
         userFriends.put(userName, cfriends); //update with new list
         return true; //everything okay
+    }
+
+    public synchronized void addChatSession(IChatSession chatSession, IChatParticipator chatParticipator) {
+        if (chatSessions.get(chatSession) != null) System.out.println("chatsession already exists...");
+        chatSessions.put(chatSession, chatParticipator);
+    }
+
+    public HashMap<IChatSession, IChatParticipator> getChatSessions() {
+        return chatSessions;
     }
 
     public HashMap<String, Client> getClients() {

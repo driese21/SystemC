@@ -14,5 +14,4 @@ public interface IChatServer extends Remote {
     ArrayList<String> showHome(String username) throws RemoteException;
     IClientSession register(String username, String password, String fullName) throws RemoteException, AlreadyBoundException, InvalidCredentialsException;
     IClientSession login(String username, String password) throws RemoteException, AlreadyBoundException, InvalidCredentialsException;
-    //ArrayList<Client> search(boolean online) throws RemoteException;
 }

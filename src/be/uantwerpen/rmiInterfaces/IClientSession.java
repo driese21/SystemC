@@ -15,10 +15,8 @@ public interface IClientSession extends Remote {
     boolean addFriend(String friendName) throws RemoteException;
     ArrayList<String> getFriends() throws RemoteException;
     boolean deleteFriend(String friendName) throws RemoteException;
-    //ArrayList<String> getOtherUsers() throws RemoteException;
-    //IChatSession search(String username, boolean online, IChatSession ics) throws RemoteException, ClientNotOnlineException;
-    void invite(String otherUsername, IChatSession ics) throws RemoteException, AlreadyBoundException;
-    void invite(IChatSession ics) throws AlreadyBoundException, RemoteException;
+    boolean invite(String otherUsername, IChatSession ics) throws RemoteException, AlreadyBoundException;
+    boolean invite(IChatSession ics) throws AlreadyBoundException, RemoteException;
     void setChatInitiator(IChatInitiator ici) throws RemoteException;
     ArrayList<Client> search(boolean online) throws RemoteException;
     String getUsername() throws RemoteException;

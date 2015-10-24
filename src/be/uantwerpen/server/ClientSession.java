@@ -1,14 +1,13 @@
 package be.uantwerpen.server;
 
-import be.uantwerpen.chat.ChatListener;
+import be.uantwerpen.chat.ChatParticipator;
 import be.uantwerpen.client.Client;
-import be.uantwerpen.exceptions.ClientNotOnlineException;
 import be.uantwerpen.rmiInterfaces.IChatInitiator;
+import be.uantwerpen.rmiInterfaces.IChatParticipator;
 import be.uantwerpen.rmiInterfaces.IChatSession;
 import be.uantwerpen.rmiInterfaces.IClientSession;
 
 import java.rmi.AlreadyBoundException;
-import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
@@ -65,18 +64,44 @@ public class ClientSession extends UnicastRemoteObject implements IClientSession
         return ics;
     }*/
 
+    /**
+     * This gets called by a client who wants to set up a chat with another client
+     * @param otherUsername the username of the other user
+     * @param ics the chatsession created by the initiating client
+     * @throws RemoteException
+     * @throws AlreadyBoundException
+     */
     @Override
-    public void invite(String otherUsername, IChatSession ics) throws RemoteException, AlreadyBoundException {
-        System.out.println(username + " wants to chat with " + otherUsername);
+    public boolean invite(String otherUsername, IChatSession ics) throws RemoteException, AlreadyBoundException {
         ClientSession otherClientSession = ChatServer.getInstance().getOnlineClients().get(otherUsername);
-        otherClientSession.invite(ics);
-        ics.addListener(new ChatListener());
+        return otherClientSession.invite(ics);
     }
 
+    /**
+     * This gets called by clientSessionA, thus this clientsession gets an invitiation
+     * @param ics the set up chatsession
+     * @throws AlreadyBoundException
+     * @throws RemoteException
+     */
     @Override
-    public void invite(IChatSession ics) throws AlreadyBoundException, RemoteException {
+    public boolean invite(IChatSession ics) throws AlreadyBoundException, RemoteException {
         System.out.println("want to chat with me?");
-        chatInitiator.initialHandshake(ics);
+        ChatParticipator chatParticipator = new ChatParticipator("BRUCE WAYNE");
+        if (chatInitiator.initialHandshake(ics)) {
+            if (ics.addParticipator(chatParticipator))
+                ChatServer.getInstance().addChatSession(ics, chatParticipator);
+            else {
+                System.out.println("Something went wrong while adding SERVER participator to session...");
+                return false;
+            }
+        } else {
+            System.out.println("Something with wrong while handshaking my client...");
+            return false;
+        }
+        chatParticipator.addChatSession(ics);
+        System.out.println("Invited my client and added " + chatParticipator.getName());
+        System.out.println(ChatServer.getInstance().getChatSessions().size());
+        return true;
     }
 
     @Override
