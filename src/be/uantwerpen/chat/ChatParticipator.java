@@ -26,9 +26,9 @@ public class ChatParticipator extends UnicastRemoteObject implements IChatPartic
     }
 
     @Override
-    public void notifyListener(String msg) {
-        this.newMessage = msg;
-        System.out.println("[SERVER] " + msg);
+    public void notifyListener() throws RemoteException {
+        System.out.println(chatSession.getChatName());
+        System.out.println(chatSession.getChatMessages());
     }
 
     @Override

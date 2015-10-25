@@ -85,8 +85,6 @@ public class ChatServer extends UnicastRemoteObject implements IChatServer {
                 //client not online, let's log him in
                 cs = new ClientSession(username);
                 onlineClients.put(username, cs);
-                Registry registry = LocateRegistry.createRegistry(11338);
-                registry.bind("ClientSession-"+username.hashCode(), cs);
                 System.out.println( username + " logged in and created session on port " + 11338);
                 return cs;
             } else {
@@ -96,25 +94,6 @@ public class ChatServer extends UnicastRemoteObject implements IChatServer {
             }
         } else throw new InvalidCredentialsException("User provided invalid credentials.");
     }
-
-    /*@Override
-    public ArrayList<Client> search(boolean online) {
-        ArrayList<Client> otherUsers = new ArrayList<>();
-        for (ClientSession cs : onlineClients.values()) {
-            try {
-                otherUsers.add(search(cs.getUsername(), online));
-            } catch (ClientNotOnlineException cnoe) {
-                //doesn't matter at this point
-            }
-        }
-        return otherUsers;
-    }*/
-
-    /*public ArrayList<String> getOtherUsers() {
-        ArrayList<String> otherUsers = clients.values();
-        for (Client c : search(true)) otherUsers.add(c.getUsername());
-        return otherUsers;
-    }*/
 
     public boolean addFriend(String username, String friendUserName) {
         Client friend = clients.get(friendUserName);
@@ -153,8 +132,9 @@ public class ChatServer extends UnicastRemoteObject implements IChatServer {
         return true; //everything okay
     }
 
-    public synchronized void addChatSession(IChatSession chatSession, IChatParticipator chatParticipator) {
+    public synchronized void addChatSession(IChatSession chatSession, IChatParticipator chatParticipator) throws RemoteException {
         if (chatSessions.get(chatSession) != null) System.out.println("chatsession already exists...");
+        chatParticipator.addChatSession(chatSession);
         chatSessions.put(chatSession, chatParticipator);
     }
 
