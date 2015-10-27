@@ -3,7 +3,6 @@ package be.uantwerpen.server;
 import be.uantwerpen.chat.ChatParticipator;
 import be.uantwerpen.client.Client;
 import be.uantwerpen.rmiInterfaces.IChatInitiator;
-import be.uantwerpen.rmiInterfaces.IChatParticipator;
 import be.uantwerpen.rmiInterfaces.IChatSession;
 import be.uantwerpen.rmiInterfaces.IClientSession;
 
@@ -48,22 +47,6 @@ public class ClientSession extends UnicastRemoteObject implements IClientSession
         return ChatServer.getInstance().deleteFriend(username, friendName);
     }
 
-    /*@Override
-    public ArrayList<String> getOtherUsers() throws RemoteException {
-        return ChatServer.getInstance().getOtherUsers();
-    }*/
-
-    /*@Override
-    public IChatSession search(String username, boolean online, IChatSession ics) throws ClientNotOnlineException, RemoteException {
-        Client other = ChatServer.getInstance().getClients().get(username);
-        if (other == null) return null;
-        if (online) {
-            ClientSession cs = ChatServer.getInstance().getOnlineClients().get(username);
-            if (cs == null) throw new ClientNotOnlineException("You're looking for online clients, but " + username + " is not online.");
-        }
-        return ics;
-    }*/
-
     /**
      * This gets called by a client who wants to set up a chat with another client
      * @param otherUsername the username of the other user
@@ -88,7 +71,7 @@ public class ClientSession extends UnicastRemoteObject implements IClientSession
         System.out.println("[INVITED CLIENT]ClientSession");
         ChatParticipator chatParticipator = new ChatParticipator("BRUCE WAYNE");
         if (chatInitiator.initialHandshake(ics)) {
-            if (ics.addParticipator(chatParticipator))
+            if (ics.joinSession(chatParticipator))
                 ChatServer.getInstance().addChatSession(ics, chatParticipator);
             else {
                 System.out.println("Something went wrong while adding SERVER participator to session...");

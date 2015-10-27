@@ -1,7 +1,6 @@
 package be.uantwerpen.server;
 
 import be.uantwerpen.client.Client;
-import be.uantwerpen.exceptions.ClientNotOnlineException;
 import be.uantwerpen.exceptions.InvalidCredentialsException;
 import be.uantwerpen.rmiInterfaces.IChatParticipator;
 import be.uantwerpen.rmiInterfaces.IChatServer;
@@ -10,8 +9,6 @@ import be.uantwerpen.rmiInterfaces.IClientSession;
 
 import java.rmi.AlreadyBoundException;
 import java.rmi.RemoteException;
-import java.rmi.registry.LocateRegistry;
-import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -48,9 +45,6 @@ public class ChatServer extends UnicastRemoteObject implements IChatServer {
             defaultHome.add("Exit");
             return defaultHome;
         }
-        /*for (Client cl : clients) {
-            //if (cl.getUsername().equalsIgnoreCase(username))
-        }*/
         return null;
     }
 

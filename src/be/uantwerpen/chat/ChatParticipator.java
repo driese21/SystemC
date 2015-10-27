@@ -1,5 +1,6 @@
 package be.uantwerpen.chat;
 
+import be.uantwerpen.enums.ChatNotificationType;
 import be.uantwerpen.rmiInterfaces.IChatParticipator;
 import be.uantwerpen.rmiInterfaces.IChatSession;
 
@@ -11,7 +12,6 @@ import java.rmi.RemoteException;
  */
 public class ChatParticipator extends UnicastRemoteObject implements IChatParticipator {
     private String username;
-    private String newMessage;
     private IChatSession chatSession;
 
     public ChatParticipator() throws RemoteException { }
@@ -26,9 +26,16 @@ public class ChatParticipator extends UnicastRemoteObject implements IChatPartic
     }
 
     @Override
-    public void notifyListener() throws RemoteException {
-        System.out.println(chatSession.getChatName());
-        System.out.println(chatSession.getChatMessages());
+    public void notifyListener(ChatNotificationType cnt) throws RemoteException {
+        if (cnt == ChatNotificationType.USERJOINED) {
+            try {
+                pushMessage("Welcome xxx to " + chatSession.getChatName());
+            } catch (InterruptedException e) {
+                notifyListener(ChatNotificationType.USERJOINED);
+            }
+        } else if (cnt == ChatNotificationType.NEWMESSAGE) {
+
+        }
     }
 
     @Override
