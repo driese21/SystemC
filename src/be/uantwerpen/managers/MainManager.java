@@ -2,6 +2,7 @@ package be.uantwerpen.managers;
 
 import be.uantwerpen.interfaces.IMainManager;
 
+import java.rmi.RemoteException;
 import java.util.ArrayList;
 
 /**
@@ -23,17 +24,17 @@ public class MainManager implements IMainManager {
     }
 
     @Override
-    public boolean addFriend(String username) {
-        return userManager.addFriend(username);
+    public boolean addFriend(String username, String friendName) throws RemoteException {
+        return userManager.addFriend(username, friendName);
     }
 
     @Override
     public boolean removeFriend(String username) {
-        return userManager.removeFriend(username);
+        return false;
     }
 
     @Override
-    public ArrayList<String> getOnlineFriends() {
-        return userManager.getOnlineFriends();
+    public ArrayList<String> getOnlineFriends(String username) throws RemoteException {
+        return userManager.getOnlineFriends(username);
     }
 }

@@ -21,7 +21,7 @@ public class ChatServer extends UnicastRemoteObject implements IChatServer {
     private HashMap<String, Client> clients;
     private HashMap<String, ArrayList<Client>> userFriends;
     private HashMap<String, ClientSession> onlineClients;
-    private HashMap<IChatSession, IChatParticipator> chatSessions;
+    private HashMap<IChatSession, IChatParticipator> chatSessions; //chatsessions that server has joined
 
     public static ChatServer getInstance() throws RemoteException {
         if (instance == null) instance = new ChatServer();
@@ -140,7 +140,17 @@ public class ChatServer extends UnicastRemoteObject implements IChatServer {
         return clients;
     }
 
+    public Client getClient(String username) { return clients.get(username); }
+
     public HashMap<String, ClientSession> getOnlineClients() {
         return onlineClients;
+    }
+
+    public ArrayList<Client> getUserFriends(String username) {
+        return userFriends.get(username);
+    }
+
+    public void updateUserFriends(String username, ArrayList<Client> friends) {
+        userFriends.put(username, friends);
     }
 }

@@ -2,6 +2,7 @@ package be.uantwerpen.server;
 
 import be.uantwerpen.chat.ChatParticipator;
 import be.uantwerpen.client.Client;
+import be.uantwerpen.managers.MainManager;
 import be.uantwerpen.rmiInterfaces.IChatInitiator;
 import be.uantwerpen.rmiInterfaces.IChatSession;
 import be.uantwerpen.rmiInterfaces.IClientSession;
@@ -34,7 +35,7 @@ public class ClientSession extends UnicastRemoteObject implements IClientSession
 
     @Override
     public boolean addFriend(String friendName) throws RemoteException {
-        return ChatServer.getInstance().addFriend(this.username, friendName);
+        return MainManager.getInstance().addFriend(username, friendName);
     }
 
     @Override

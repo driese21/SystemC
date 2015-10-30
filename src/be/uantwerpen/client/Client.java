@@ -1,5 +1,7 @@
 package be.uantwerpen.client;
 
+import be.uantwerpen.server.ClientSession;
+
 import java.util.Calendar;
 import java.util.Date;
 
@@ -9,12 +11,21 @@ import java.util.Date;
 public class Client {
     private String username, domain, fullName;
     private String password;
+    private ClientSession activeSession;
 
     public Client(String username, String password, String fullName) {
         this.username = username.split("@")[0];
         this.domain = username.split("@")[1];
         this.fullName = fullName;
         this.password = password;
+    }
+
+    public ClientSession getActiveSession() {
+        return activeSession;
+    }
+
+    public void setActiveSession(ClientSession activeSession) {
+        this.activeSession = activeSession;
     }
 
     public String getUsername() {
