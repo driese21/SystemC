@@ -23,8 +23,13 @@ public class UserManager implements IUserManager {
     }
 
     @Override
-    public boolean removeFriend(String username) {
-        return false;
+    public boolean removeFriend(String username, String friendName) throws RemoteException {
+        ArrayList<Client> friends = ChatServer.getInstance().getUserFriends(username); //Fetch the user's friends
+        if (friends == null) return false; //User has no friends, thus can't remove any.
+        Client friend = ChatServer.getInstance().getClient(friendName); //Fetch the friend's profile
+        boolean removed = friends.remove(friend); // Returns false if there is no friend to remove
+        ChatServer.getInstance().updateUserFriends(username, friends); //Update the list on the server instance
+        return removed;
     }
 
     @Override
@@ -32,9 +37,6 @@ public class UserManager implements IUserManager {
         ArrayList<Client> friends = ChatServer.getInstance().getUserFriends(username);
         if (friends == null) return new ArrayList<>();
         ArrayList<String> userFriends = new ArrayList<>();
-        for (Client friend : friends) {
-            if (friend.getActiveSession() != null) userFriends.add(friend.getUsername());
-        }
         return userFriends;
     }
 }

@@ -1,6 +1,8 @@
 package be.uantwerpen.managers;
 
+import be.uantwerpen.interfaces.IClientSessionManager;
 import be.uantwerpen.interfaces.IMainManager;
+import be.uantwerpen.interfaces.IUserManager;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;
@@ -29,8 +31,8 @@ public class MainManager implements IMainManager {
     }
 
     @Override
-    public boolean removeFriend(String username) {
-        return false;
+    public boolean removeFriend(String username, String friendName) throws RemoteException {
+        return userManager.removeFriend(username, friendName);
     }
 
     @Override

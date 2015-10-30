@@ -8,6 +8,6 @@ import java.util.ArrayList;
  */
 public interface IUserManager {
     boolean addFriend(String username, String friendName) throws RemoteException;
-    boolean removeFriend(String username);
+    boolean removeFriend(String username, String friendName) throws RemoteException;
     ArrayList<String> getOnlineFriends(String username) throws RemoteException;
 }

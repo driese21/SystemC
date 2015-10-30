@@ -3,12 +3,13 @@ package be.uantwerpen.client;
 import be.uantwerpen.server.ClientSession;
 
 import java.util.Calendar;
+import java.util.Comparator;
 import java.util.Date;
 
 /**
  * Created by Dries on 16/10/2015.
  */
-public class Client {
+public class Client implements Comparator<Client> {
     private String username, domain, fullName;
     private String password;
     private ClientSession activeSession;
@@ -44,5 +45,10 @@ public class Client {
                 ", fullName='" + fullName + '\'' +
                 ", password='" + password + '\'' +
                 '}';
+    }
+
+    @Override
+    public int compare(Client o1, Client o2) {
+        return o1.getUsername().compareTo(o2.getUsername());
     }
 }
