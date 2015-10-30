@@ -37,6 +37,9 @@ public class UserManager implements IUserManager {
         ArrayList<Client> friends = ChatServer.getInstance().getUserFriends(username);
         if (friends == null) return new ArrayList<>();
         ArrayList<String> userFriends = new ArrayList<>();
+        for (Client friend : friends) {
+            if (friend.getActiveSession() != null) userFriends.add(friend.getUsername());
+        }
         return userFriends;
     }
 }
