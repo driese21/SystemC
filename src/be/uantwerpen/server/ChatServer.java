@@ -37,18 +37,6 @@ public class ChatServer extends UnicastRemoteObject implements IChatServer {
     }
 
     @Override
-    public ArrayList<String> showHome(String username) throws RemoteException {
-        if (username == null || username.equalsIgnoreCase("")) { //non existing user, show default
-            ArrayList<String> defaultHome = new ArrayList<>();
-            defaultHome.add("Register");
-            defaultHome.add("Login");
-            defaultHome.add("Exit");
-            return defaultHome;
-        }
-        return null;
-    }
-
-    @Override
     public IClientSession register(String username, String password, String fullName) throws RemoteException, AlreadyBoundException, InvalidCredentialsException {
         Client c = clients.get(username);
         if (c != null) {

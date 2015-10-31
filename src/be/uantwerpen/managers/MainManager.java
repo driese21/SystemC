@@ -1,8 +1,6 @@
 package be.uantwerpen.managers;
 
-import be.uantwerpen.interfaces.IClientSessionManager;
 import be.uantwerpen.interfaces.IMainManager;
-import be.uantwerpen.interfaces.IUserManager;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;
@@ -11,16 +9,10 @@ import java.util.ArrayList;
  * Created by Dries on 26/10/2015.
  */
 public class MainManager implements IMainManager {
-    private static MainManager instance;
     private ClientSessionManager clientSessionManager;
     private UserManager userManager;
 
-    public static MainManager getInstance() {
-        if (instance == null) instance = new MainManager();
-        return instance;
-    }
-
-    private MainManager() {
+    public MainManager() {
         this.clientSessionManager = new ClientSessionManager();
         this.userManager = new UserManager();
     }
@@ -38,5 +30,14 @@ public class MainManager implements IMainManager {
     @Override
     public ArrayList<String> getOnlineFriends(String username) throws RemoteException {
         return userManager.getOnlineFriends(username);
+    }
+
+    public String helloTest() {
+        return "Hello I'm a different thread!";
+    }
+
+    @Override
+    public void run() {
+        System.out.println("is now running");
     }
 }

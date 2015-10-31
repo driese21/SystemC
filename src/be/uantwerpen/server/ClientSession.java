@@ -21,8 +21,14 @@ public class ClientSession extends UnicastRemoteObject implements IClientSession
     private String username;
     private IChatInitiator chatInitiator;
     private Date lastUpdate;
+    private MainManager mainManager;
+
+    public ClientSession() throws RemoteException {
+        mainManager = new MainManager();
+    }
 
     public ClientSession(String username) throws RemoteException {
+        this();
         this.username = username;
         this.lastUpdate = Calendar.getInstance().getTime();
     }
@@ -35,7 +41,7 @@ public class ClientSession extends UnicastRemoteObject implements IClientSession
 
     @Override
     public boolean addFriend(String friendName) throws RemoteException {
-        return MainManager.getInstance().addFriend(username, friendName);
+        return mainManager.addFriend(username, friendName);
     }
 
     @Override
@@ -57,6 +63,7 @@ public class ClientSession extends UnicastRemoteObject implements IClientSession
      */
     @Override
     public boolean invite(String otherUsername, IChatSession ics) throws RemoteException, AlreadyBoundException {
+        System.out.println(username + " is inviting " + otherUsername + " voor een leuk gesprek");
         ClientSession otherClientSession = ChatServer.getInstance().getOnlineClients().get(otherUsername);
         return otherClientSession.invite(ics);
     }
@@ -69,12 +76,12 @@ public class ClientSession extends UnicastRemoteObject implements IClientSession
      */
     @Override
     public boolean invite(IChatSession ics) throws AlreadyBoundException, RemoteException {
-        System.out.println("[INVITED CLIENT]ClientSession");
         ChatParticipator chatParticipator = new ChatParticipator("BRUCE WAYNE");
         if (chatInitiator.initialHandshake(ics)) {
-            if (ics.joinSession(chatParticipator))
+            if (ics.joinSession(chatParticipator, true)) {
+                chatParticipator.setHost(ics.getHost());
                 ChatServer.getInstance().addChatSession(ics, chatParticipator);
-            else {
+            } else {
                 System.out.println("Something went wrong while adding SERVER participator to session...");
                 return false;
             }
@@ -82,7 +89,6 @@ public class ClientSession extends UnicastRemoteObject implements IClientSession
             System.out.println("Something with wrong while handshaking my client...");
             return false;
         }
-        System.out.println("# chat sessions joined by server: " + ChatServer.getInstance().getChatSessions().size());
         return true;
     }
 
