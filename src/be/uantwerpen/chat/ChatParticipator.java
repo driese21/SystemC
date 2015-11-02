@@ -1,11 +1,14 @@
 package be.uantwerpen.chat;
 
 import be.uantwerpen.enums.ChatNotificationType;
+import be.uantwerpen.managers.CommandManager;
 import be.uantwerpen.rmiInterfaces.IChatParticipator;
 import be.uantwerpen.rmiInterfaces.IChatSession;
+import be.uantwerpen.rmiInterfaces.IMessage;
 
 import java.rmi.server.UnicastRemoteObject;
 import java.rmi.RemoteException;
+import java.rmi.ServerException;
 
 /**
  * Created by Dries on 23/10/2015.
@@ -37,26 +40,16 @@ public class ChatParticipator extends UnicastRemoteObject implements IChatPartic
     }
 
     @Override
-    public void notifyListener(ChatNotificationType cnt, Message msg) throws RemoteException {
+    public void notifyListener(ChatNotificationType cnt, IMessage msg) throws RemoteException, InterruptedException {
+        if (msg.getMessage().startsWith("/")) {
+            pushMessage(CommandManager.parse(msg.getMessage()));
+        }
     }
 
     @Override
     public void notifyListener(ChatNotificationType cnt, IChatParticipator newParticipator) throws RemoteException {
 
     }
-
-    /*@Override
-    public void notifyListener(ChatNotificationType cnt) throws RemoteException {
-        if (cnt == ChatNotificationType.USERJOINED) {
-            try {
-                pushMessage("Welcome xxx to " + chatSession.getChatName());
-            } catch (InterruptedException e) {
-                notifyListener(ChatNotificationType.USERJOINED);
-            }
-        } else if (cnt == ChatNotificationType.NEWMESSAGE) {
-
-        }
-    }*/
 
     @Override
     public String getName() throws RemoteException {
@@ -65,8 +58,7 @@ public class ChatParticipator extends UnicastRemoteObject implements IChatPartic
 
     @Override
     public void pushMessage(String msg) throws RemoteException, InterruptedException {
-        //Message message = new Message(msg, getName());
-        //chatSession.newMessage(message);
+        chatSession.newMessage(msg, username);
     }
 
     /**
@@ -101,11 +93,15 @@ public class ChatParticipator extends UnicastRemoteObject implements IChatPartic
      */
     @Override
     public boolean hostChat(IChatParticipator newHost) throws RemoteException {
-        if (host.alive()) return false;
-        if (changingHost) throw new RemoteException("Someone is already taking over...");
-        host = newHost;
-        setChangingHost(true);
-        return true;
+        try {
+            if (host.alive()) return false;
+        } catch (RemoteException re) {
+            if (changingHost) throw new RemoteException("Someone is already taking over...");
+            host = newHost;
+            setChangingHost(true);
+            return true;
+        }
+        throw new RemoteException("Not planned...");
     }
 
     /**
@@ -123,6 +119,6 @@ public class ChatParticipator extends UnicastRemoteObject implements IChatPartic
         this.host = newHost;
         this.chatSession = newSession;
         setChangingHost(false);
-
+        chatSession.joinSession(this, true);
     }
 }

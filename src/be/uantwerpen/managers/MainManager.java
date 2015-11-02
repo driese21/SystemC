@@ -17,6 +17,7 @@ public class MainManager implements IMainManager {
         this.userManager = new UserManager();
     }
 
+    //region UserManager
     @Override
     public boolean addFriend(String username, String friendName) throws RemoteException {
         return userManager.addFriend(username, friendName);
@@ -31,13 +32,8 @@ public class MainManager implements IMainManager {
     public ArrayList<String> getOnlineFriends(String username) throws RemoteException {
         return userManager.getOnlineFriends(username);
     }
-
-    public String helloTest() {
-        return "Hello I'm a different thread!";
-    }
+    //endregion
 
     @Override
-    public void run() {
-        System.out.println("is now running");
-    }
+    public void run() { }
 }

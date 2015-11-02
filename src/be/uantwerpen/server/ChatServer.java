@@ -1,6 +1,5 @@
 package be.uantwerpen.server;
 
-import be.uantwerpen.client.Client;
 import be.uantwerpen.exceptions.InvalidCredentialsException;
 import be.uantwerpen.rmiInterfaces.IChatParticipator;
 import be.uantwerpen.rmiInterfaces.IChatServer;
@@ -12,6 +11,9 @@ import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.HashMap;
+
+import javax.rmi.ssl.SslRMIServerSocketFactory;
+import javax.rmi.ssl.SslRMIClientSocketFactory;
 
 /**
  * Created by Dries on 16/10/2015.
@@ -52,11 +54,7 @@ public class ChatServer extends UnicastRemoteObject implements IChatServer {
 
     @Override
     public IClientSession login(String username, String password) throws RemoteException, AlreadyBoundException, InvalidCredentialsException {
-        System.out.println(username);
         Client c = clients.get(username);
-        for (Client cl : clients.values()) {
-            System.out.println(cl.toString());
-        }
         if (c == null) {
             System.out.println("Client is null, try registering instead.");
             return null;
@@ -67,7 +65,6 @@ public class ChatServer extends UnicastRemoteObject implements IChatServer {
                 //client not online, let's log him in
                 cs = new ClientSession(username);
                 onlineClients.put(username, cs);
-                System.out.println( username + " logged in and created session on port " + 11338);
                 return cs;
             } else {
                 //client already logged on, let's return the session
@@ -75,19 +72,6 @@ public class ChatServer extends UnicastRemoteObject implements IChatServer {
                 return cs;
             }
         } else throw new InvalidCredentialsException("User provided invalid credentials.");
-    }
-
-    public boolean addFriend(String username, String friendUserName) {
-        Client friend = clients.get(friendUserName);
-        if (friend == null) return false; //user trying to add does not exist
-        //other user exists, we can continue
-        ArrayList<Client> cfriends = userFriends.get(username);
-        for (Client c : cfriends) {
-            if (c.getUsername().equalsIgnoreCase(friendUserName)) return true; //friend already added
-        }
-        cfriends.add(friend); //friend does not exist, add him/her
-        userFriends.put(username, cfriends); //update map
-        return true;
     }
 
     public ArrayList<String> getFriends(String username) {

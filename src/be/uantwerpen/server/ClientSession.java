@@ -1,7 +1,7 @@
 package be.uantwerpen.server;
 
 import be.uantwerpen.chat.ChatParticipator;
-import be.uantwerpen.client.Client;
+import be.uantwerpen.server.Client;
 import be.uantwerpen.managers.MainManager;
 import be.uantwerpen.rmiInterfaces.IChatInitiator;
 import be.uantwerpen.rmiInterfaces.IChatSession;

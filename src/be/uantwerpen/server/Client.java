@@ -1,10 +1,6 @@
-package be.uantwerpen.client;
+package be.uantwerpen.server;
 
-import be.uantwerpen.server.ClientSession;
-
-import java.util.Calendar;
 import java.util.Comparator;
-import java.util.Date;
 
 /**
  * Created by Dries on 16/10/2015.

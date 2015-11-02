@@ -1,16 +1,19 @@
 package be.uantwerpen.managers;
 
 import be.uantwerpen.interfaces.IUserManager;
-import be.uantwerpen.client.Client;
 import be.uantwerpen.server.ChatServer;
+import be.uantwerpen.server.Client;
+import be.uantwerpen.server.ClientSession;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.function.Consumer;
 
 /**
  * Created by Dries on 26/10/2015.
  */
 public class UserManager implements IUserManager {
+    protected UserManager() {}
     @Override
     public boolean addFriend(String username, String friendName) throws RemoteException {
         ArrayList<Client> friends = ChatServer.getInstance().getUserFriends(username);
@@ -37,9 +40,8 @@ public class UserManager implements IUserManager {
         ArrayList<Client> friends = ChatServer.getInstance().getUserFriends(username);
         if (friends == null) return new ArrayList<>();
         ArrayList<String> userFriends = new ArrayList<>();
-        for (Client friend : friends) {
-            if (friend.getActiveSession() != null) userFriends.add(friend.getUsername());
-        }
+        friends.forEach(fr -> { if (fr.getActiveSession()!=null) userFriends.add(fr.getUsername()); });
         return userFriends;
     }
+
 }

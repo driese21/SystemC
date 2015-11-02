@@ -1,6 +1,6 @@
 package be.uantwerpen.rmiInterfaces;
 
-import be.uantwerpen.client.Client;
+import be.uantwerpen.server.Client;
 
 import java.rmi.AlreadyBoundException;
 import java.rmi.Remote;
