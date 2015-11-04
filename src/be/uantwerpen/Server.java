@@ -2,6 +2,7 @@ package be.uantwerpen;
 
 import be.uantwerpen.managers.MainManager;
 import be.uantwerpen.server.ChatServer;
+import be.uantwerpen.server.ClientAcceptor;
 
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
@@ -12,9 +13,10 @@ import java.rmi.registry.Registry;
 public class Server {
     public static void main(String[] args) {
         try {
-            ChatServer cs = ChatServer.getInstance();
+            //ChatServer cs = ChatServer.getInstance();
+            ClientAcceptor ca = new ClientAcceptor();
             Registry registry = LocateRegistry.createRegistry(11337);
-            registry.bind("ChatServer", cs);
+            registry.bind("ChatServer", ca);
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }

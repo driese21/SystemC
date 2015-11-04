@@ -1,14 +1,9 @@
 package be.uantwerpen.server;
 
-import be.uantwerpen.exceptions.InvalidCredentialsException;
 import be.uantwerpen.rmiInterfaces.IChatParticipator;
-import be.uantwerpen.rmiInterfaces.IChatServer;
 import be.uantwerpen.rmiInterfaces.IChatSession;
-import be.uantwerpen.rmiInterfaces.IClientSession;
 
-import java.rmi.AlreadyBoundException;
 import java.rmi.RemoteException;
-import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -18,60 +13,23 @@ import javax.rmi.ssl.SslRMIClientSocketFactory;
 /**
  * Created by Dries on 16/10/2015.
  */
-public class ChatServer extends UnicastRemoteObject implements IChatServer {
-    private static ChatServer instance;
+public class ChatServer {
+    private static ChatServer instance = new ChatServer();
     private HashMap<String, Client> clients;
     private HashMap<String, ArrayList<Client>> userFriends;
     private HashMap<String, ClientSession> onlineClients;
     private HashMap<IChatSession, IChatParticipator> chatSessions; //chatsessions that server has joined
 
-    public static ChatServer getInstance() throws RemoteException {
-        if (instance == null) instance = new ChatServer();
+    public static ChatServer getInstance() {
         return instance;
     }
 
-    private ChatServer() throws RemoteException {
+    private ChatServer() {
         super();
         this.clients = new HashMap<>();
         this.userFriends = new HashMap<>();
         this.onlineClients = new HashMap<>();
         this.chatSessions = new HashMap<>();
-    }
-
-    @Override
-    public IClientSession register(String username, String password, String fullName) throws RemoteException, AlreadyBoundException, InvalidCredentialsException {
-        Client c = clients.get(username);
-        if (c != null) {
-            System.out.println("Client already exists, logging in instead.");
-            return login(username, password);
-        }
-        c = new Client(username, password, fullName);
-        //if client does not exist, add him
-        clients.put(c.getUsername(), c);
-        System.out.println(c.toString() + " registered, logging in automatically.");
-        return login(c.getUsername(), password);
-    }
-
-    @Override
-    public IClientSession login(String username, String password) throws RemoteException, AlreadyBoundException, InvalidCredentialsException {
-        Client c = clients.get(username);
-        if (c == null) {
-            System.out.println("Client is null, try registering instead.");
-            return null;
-        } else if (c.getUsername().equalsIgnoreCase(username) && c.getPassword().equalsIgnoreCase(password)) {
-            //client exists, let's execute some checks
-            ClientSession cs = onlineClients.get(username);
-            if (cs == null) {
-                //client not online, let's log him in
-                cs = new ClientSession(username);
-                onlineClients.put(username, cs);
-                return cs;
-            } else {
-                //client already logged on, let's return the session
-                System.out.println("Just returning previous session");
-                return cs;
-            }
-        } else throw new InvalidCredentialsException("User provided invalid credentials.");
     }
 
     public ArrayList<String> getFriends(String username) {
@@ -112,10 +70,16 @@ public class ChatServer extends UnicastRemoteObject implements IChatServer {
         return clients;
     }
 
+    public void addClient(String username, Client client) { clients.put(username, client); }
+
     public Client getClient(String username) { return clients.get(username); }
 
     public HashMap<String, ClientSession> getOnlineClients() {
         return onlineClients;
+    }
+
+    public void addClientSession(String username, ClientSession clientSession) {
+        onlineClients.put(username, clientSession);
     }
 
     public ArrayList<Client> getUserFriends(String username) {

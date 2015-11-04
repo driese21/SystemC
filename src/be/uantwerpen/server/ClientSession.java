@@ -62,9 +62,10 @@ public class ClientSession extends UnicastRemoteObject implements IClientSession
      * @throws AlreadyBoundException
      */
     @Override
-    public boolean invite(String otherUsername, IChatSession ics) throws RemoteException, AlreadyBoundException {
+    public boolean invite(String otherUsername, IChatSession ics) throws RemoteException {
         System.out.println(username + " is inviting " + otherUsername + " voor een leuk gesprek");
         ClientSession otherClientSession = ChatServer.getInstance().getOnlineClients().get(otherUsername);
+        ics.setChatName(getFullname());
         return otherClientSession.invite(ics);
     }
 
@@ -75,7 +76,7 @@ public class ClientSession extends UnicastRemoteObject implements IClientSession
      * @throws RemoteException
      */
     @Override
-    public boolean invite(IChatSession ics) throws AlreadyBoundException, RemoteException {
+    public boolean invite(IChatSession ics) throws RemoteException {
         ChatParticipator chatParticipator = new ChatParticipator("BRUCE WAYNE");
         if (chatInitiator.initialHandshake(ics)) {
             if (ics.joinSession(chatParticipator, true)) {
@@ -105,5 +106,10 @@ public class ClientSession extends UnicastRemoteObject implements IClientSession
     @Override
     public String getUsername() {
         return username;
+    }
+
+    @Override
+    public String getFullname() throws RemoteException {
+        return ChatServer.getInstance().getClient(username).getFullName();
     }
 }

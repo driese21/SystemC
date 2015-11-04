@@ -92,7 +92,7 @@ public class ChatParticipator extends UnicastRemoteObject implements IChatPartic
      * @throws RemoteException
      */
     @Override
-    public boolean hostChat(IChatParticipator newHost) throws RemoteException {
+    public synchronized boolean hostChat(IChatParticipator newHost) throws RemoteException {
         try {
             if (host.alive()) return false;
         } catch (RemoteException re) {
