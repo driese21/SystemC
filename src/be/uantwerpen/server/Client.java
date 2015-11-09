@@ -11,6 +11,7 @@ public class Client implements Comparator<Client> {
     private ClientSession activeSession;
 
     public Client(String username, String password, String fullName) {
+        System.out.println(username);
         this.username = username.split("@")[0];
         this.domain = username.split("@")[1];
         this.fullName = fullName;

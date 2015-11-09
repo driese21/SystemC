@@ -35,29 +35,11 @@ public class ChatServer {
     public ArrayList<String> getFriends(String username) {
         ArrayList<String> friends = new ArrayList<>();
         ArrayList<Client> cfriends = userFriends.get(username);
-        if (cfriends == null) return null;
         cfriends.forEach(cf -> friends.add(cf.getUsername()));
         return friends;
     }
 
-    public boolean deleteFriend(String userName, String friendName) {
-        ArrayList<Client> cfriends = userFriends.get(userName);
-        if (cfriends == null) return true; //user has no friends, so it's okay
-        Client friendToDelete = null;
-        for (Client c : cfriends) {
-            if (c.getUsername().equalsIgnoreCase(friendName)) {
-                friendToDelete = c;
-                break;
-            }
-        }
-        if (friendToDelete == null) return true; //friend doesn't exist, so it's okay
-        cfriends.remove(friendToDelete); //remove friend
-        userFriends.put(userName, cfriends); //update with new list
-        return true; //everything okay
-    }
-
     public synchronized void addChatSession(IChatSession chatSession, IChatParticipator chatParticipator) throws RemoteException {
-        if (chatSessions.get(chatSession) != null) System.out.println("chatsession already exists...");
         chatParticipator.addChatSession(chatSession);
         chatSessions.put(chatSession, chatParticipator);
     }

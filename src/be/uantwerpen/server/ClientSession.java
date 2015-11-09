@@ -1,11 +1,11 @@
 package be.uantwerpen.server;
 
 import be.uantwerpen.chat.ChatParticipator;
-import be.uantwerpen.server.Client;
 import be.uantwerpen.managers.MainManager;
 import be.uantwerpen.rmiInterfaces.IChatInitiator;
 import be.uantwerpen.rmiInterfaces.IChatSession;
 import be.uantwerpen.rmiInterfaces.IClientSession;
+import be.uantwerpen.exceptions.ClientNotOnlineException;
 
 import java.rmi.AlreadyBoundException;
 import java.rmi.RemoteException;
@@ -46,12 +46,13 @@ public class ClientSession extends UnicastRemoteObject implements IClientSession
 
     @Override
     public ArrayList<String> getFriends() throws RemoteException {
-        return ChatServer.getInstance().getFriends(username);
+        return mainManager.getFriends(username, true);
     }
 
     @Override
     public boolean deleteFriend(String friendName) throws RemoteException {
-        return ChatServer.getInstance().deleteFriend(username, friendName);
+        //return ChatServer.getInstance().deleteFriend(username, friendName);
+        return mainManager.removeFriend(username, friendName);
     }
 
     /**
@@ -62,9 +63,10 @@ public class ClientSession extends UnicastRemoteObject implements IClientSession
      * @throws AlreadyBoundException
      */
     @Override
-    public boolean invite(String otherUsername, IChatSession ics) throws RemoteException {
+    public boolean sendInvite(String otherUsername, IChatSession ics) throws RemoteException, ClientNotOnlineException {
         System.out.println(username + " is inviting " + otherUsername + " voor een leuk gesprek");
         ClientSession otherClientSession = ChatServer.getInstance().getOnlineClients().get(otherUsername);
+        if (otherClientSession == null) throw new ClientNotOnlineException("Could not find user " + otherUsername);
         ics.setChatName(getFullname());
         return otherClientSession.invite(ics);
     }

@@ -11,7 +11,7 @@ import java.rmi.RemoteException;
 /**
  * Created by Dries on 4/11/2015.
  */
-public class AuthenticationManager {
+public class AuthenticationManager  {
     public static IClientSession register(String username, String password, String fullName) throws RemoteException, InvalidCredentialsException {
         Client c = new Client(username, password, fullName);
         Client test = ChatServer.getInstance().getClients().get(c.getUsername());
@@ -27,10 +27,9 @@ public class AuthenticationManager {
 
     public static IClientSession login(String username, String password) throws RemoteException, InvalidCredentialsException {
         Client c = ChatServer.getInstance().getClients().get(username);
-        if (c == null) {
-            System.out.println("Client is null, try registering instead.");
-            return null;
-        } else if (c.getUsername().equalsIgnoreCase(username) && c.getPassword().equalsIgnoreCase(password)) {
+        System.out.println(username);
+        if (c == null) throw new InvalidCredentialsException("User does not exist, try registering instead");
+        else if (c.getUsername().equalsIgnoreCase(username) && c.getPassword().equalsIgnoreCase(password)) {
             //client exists, let's execute some checks
             ClientSession cs = ChatServer.getInstance().getOnlineClients().get(username);
             if (cs == null) {
@@ -38,12 +37,8 @@ public class AuthenticationManager {
                 cs = new ClientSession(username);
                 ChatServer.getInstance().addClientSession(username, cs);
                 return cs;
-            } else {
-                //client already logged on, let's return the session
-                System.out.println("Just returning previous session");
-                return cs;
-            }
-        } else throw new InvalidCredentialsException("User provided invalid credentials.");
+            } else return cs;//client already logged on, let's return the session
+        } else throw new InvalidCredentialsException("User/password combination is incorrect.");
     }
 
 }

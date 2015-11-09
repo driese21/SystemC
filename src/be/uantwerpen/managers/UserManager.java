@@ -35,13 +35,21 @@ public class UserManager implements IUserManager {
         return removed;
     }
 
-    @Override
+    /*@Override
     public ArrayList<String> getOnlineFriends(String username) throws RemoteException {
         ArrayList<Client> friends = ChatServer.getInstance().getUserFriends(username);
         if (friends == null) return new ArrayList<>();
         ArrayList<String> userFriends = new ArrayList<>();
         friends.forEach(fr -> { if (fr.getActiveSession()!=null) userFriends.add(fr.getUsername()); });
         return userFriends;
-    }
+    }*/
 
+    @Override
+    public ArrayList<String> getFriends(String username, boolean online) throws RemoteException {
+        ArrayList<Client> friends = ChatServer.getInstance().getUserFriends(username);
+        ArrayList<String> userFriends = new ArrayList<>();
+        if (online) friends.forEach(fr -> { if (fr.getActiveSession()!=null) userFriends.add(fr.getUsername()); });
+        else friends.forEach(fr -> userFriends.add(fr.getUsername()));
+        return userFriends;
+    }
 }

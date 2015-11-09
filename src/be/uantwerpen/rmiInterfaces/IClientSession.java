@@ -1,5 +1,6 @@
 package be.uantwerpen.rmiInterfaces;
 
+import be.uantwerpen.exceptions.ClientNotOnlineException;
 import be.uantwerpen.server.Client;
 
 import java.rmi.AlreadyBoundException;
@@ -15,7 +16,7 @@ public interface IClientSession extends Remote {
     boolean addFriend(String friendName) throws RemoteException;
     ArrayList<String> getFriends() throws RemoteException;
     boolean deleteFriend(String friendName) throws RemoteException;
-    boolean invite(String otherUsername, IChatSession ics) throws RemoteException;
+    boolean sendInvite(String otherUsername, IChatSession ics) throws RemoteException, ClientNotOnlineException;
     boolean invite(IChatSession ics) throws AlreadyBoundException, RemoteException;
     void setChatInitiator(IChatInitiator ici) throws RemoteException;
     ArrayList<Client> search(boolean online) throws RemoteException;
