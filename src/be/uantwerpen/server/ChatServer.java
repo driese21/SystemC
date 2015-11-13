@@ -3,6 +3,7 @@ package be.uantwerpen.server;
 import be.uantwerpen.rmiInterfaces.IChatParticipator;
 import be.uantwerpen.rmiInterfaces.IChatSession;
 
+import java.io.*;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -27,6 +28,24 @@ public class ChatServer {
     private ChatServer() {
         super();
         this.clients = new HashMap<>();
+        //Try to read a file to import friendslist, should this fail, create a new one
+        try {
+            File file = new File("friendList.txt");
+            FileInputStream f = new FileInputStream(file);
+            ObjectInputStream s = new ObjectInputStream(f);
+            userFriends = (HashMap<String, ArrayList<Client>>) s.readObject();
+            s.close();
+        } catch (FileNotFoundException e) {
+            //Make a new file later
+            userFriends = new HashMap<>();
+        } catch (ClassNotFoundException e) {
+            //This definitely should never happen
+            e.printStackTrace();
+        } catch (IOException e) {
+            //Something went wrong with IO, make a new file later
+            userFriends = new HashMap<>();
+        }
+
         this.userFriends = new HashMap<>();
         this.onlineClients = new HashMap<>();
         this.chatSessions = new HashMap<>();
@@ -70,5 +89,16 @@ public class ChatServer {
 
     public void updateUserFriends(String username, ArrayList<Client> friends) {
         userFriends.put(username, friends);
+        //Save the friendslist to a file
+        try {
+            File file = new File("friendList.txt");
+            FileOutputStream f = new FileOutputStream(file);
+            ObjectOutputStream s = new ObjectOutputStream(f);
+            s.writeObject(userFriends);
+            s.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
     }
 }
