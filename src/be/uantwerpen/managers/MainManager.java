@@ -37,15 +37,6 @@ public class MainManager implements IMainManager {
 
     //endregion
 
-    //region ClientSessionManager
-
-    @Override
-    public IChatParticipator sendInvite(String friendName) throws RemoteException, ClientNotOnlineException {
-        return null;
-    }
-
-    //endregion
-
     @Override
     public void run() { }
 }
