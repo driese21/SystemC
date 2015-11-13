@@ -6,14 +6,12 @@ import java.util.Comparator;
  * Created by Dries on 16/10/2015.
  */
 public class Client implements Comparator<Client> {
-    private String username, domain, fullName;
+    private String username, fullName;
     private String password;
     private ClientSession activeSession;
 
     public Client(String username, String password, String fullName) {
-        System.out.println(username);
-        this.username = username.split("@")[0];
-        this.domain = username.split("@")[1];
+        this.username = username;
         this.fullName = fullName;
         this.password = password;
     }
@@ -40,7 +38,6 @@ public class Client implements Comparator<Client> {
     public String toString() {
         return "Client{" +
                 "username='" + username + '\'' +
-                ", domain='" + domain + '\'' +
                 ", fullName='" + fullName + '\'' +
                 ", password='" + password + '\'' +
                 '}';

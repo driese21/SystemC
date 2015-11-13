@@ -35,6 +35,10 @@ public class MainManager implements IMainManager {
 
     //endregion
 
+    //region ClientSessionManager
+
+    //endregion
+
     @Override
     public void run() { }
 }

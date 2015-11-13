@@ -1,6 +1,7 @@
 package be.uantwerpen.server;
 
 import be.uantwerpen.chat.ChatParticipator;
+import be.uantwerpen.interfaces.IMainManager;
 import be.uantwerpen.managers.MainManager;
 import be.uantwerpen.rmiInterfaces.IChatInitiator;
 import be.uantwerpen.rmiInterfaces.IChatSession;
@@ -21,7 +22,7 @@ public class ClientSession extends UnicastRemoteObject implements IClientSession
     private String username;
     private IChatInitiator chatInitiator;
     private Date lastUpdate;
-    private MainManager mainManager;
+    private IMainManager mainManager;
 
     public ClientSession() throws RemoteException {
         mainManager = new MainManager();
@@ -72,8 +73,8 @@ public class ClientSession extends UnicastRemoteObject implements IClientSession
     }
 
     /**
-     * This gets called by clientSessionA, thus this clientsession gets an invitiation
-     * @param ics the set up chatsession
+     * This gets called by clientSessionA, thus this ClientSession gets an invitation
+     * @param ics the set up ChatSession
      * @throws AlreadyBoundException
      * @throws RemoteException
      */
@@ -84,6 +85,7 @@ public class ClientSession extends UnicastRemoteObject implements IClientSession
             if (ics.joinSession(chatParticipator, true)) {
                 chatParticipator.setHost(ics.getHost());
                 ChatServer.getInstance().addChatSession(ics, chatParticipator);
+                ics.chooseChatName();
             } else {
                 System.out.println("Something went wrong while adding SERVER participator to session...");
                 return false;

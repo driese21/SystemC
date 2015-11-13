@@ -17,7 +17,6 @@ public class ChatParticipator extends UnicastRemoteObject implements IChatPartic
     private String username;
     private IChatSession chatSession;
     private IChatParticipator host;
-
     private boolean changingHost=false;
 
     public ChatParticipator() throws RemoteException { }
@@ -57,7 +56,11 @@ public class ChatParticipator extends UnicastRemoteObject implements IChatPartic
     }
 
     @Override
-    public void pushMessage(String msg) throws RemoteException, InterruptedException {
+    public String getChatName() throws RemoteException {
+        return chatSession.getChatName();
+    }
+
+    private void pushMessage(String msg) throws RemoteException, InterruptedException {
         chatSession.newMessage(msg, username);
     }
 
