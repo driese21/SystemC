@@ -1,6 +1,8 @@
 package be.uantwerpen.managers;
 
+import be.uantwerpen.exceptions.ClientNotOnlineException;
 import be.uantwerpen.interfaces.IMainManager;
+import be.uantwerpen.rmiInterfaces.IChatParticipator;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;
@@ -36,6 +38,11 @@ public class MainManager implements IMainManager {
     //endregion
 
     //region ClientSessionManager
+
+    @Override
+    public IChatParticipator sendInvite(String friendName) throws RemoteException, ClientNotOnlineException {
+        return null;
+    }
 
     //endregion
 
