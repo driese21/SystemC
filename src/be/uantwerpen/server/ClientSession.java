@@ -1,6 +1,6 @@
 package be.uantwerpen.server;
 
-import be.uantwerpen.chat.ChatParticipator;
+import be.uantwerpen.interfaces.IClientSessionManager;
 import be.uantwerpen.interfaces.IMainManager;
 import be.uantwerpen.managers.MainManager;
 import be.uantwerpen.rmiInterfaces.IChatInitiator;
@@ -23,6 +23,7 @@ public class ClientSession extends UnicastRemoteObject implements IClientSession
     private IChatInitiator chatInitiator;
     private Date lastUpdate;
     private IMainManager mainManager;
+    private IClientSessionManager clientSessionManager;
 
     public ClientSession() throws RemoteException {
         mainManager = new MainManager();
@@ -52,7 +53,6 @@ public class ClientSession extends UnicastRemoteObject implements IClientSession
 
     @Override
     public boolean deleteFriend(String friendName) throws RemoteException {
-        //return ChatServer.getInstance().deleteFriend(username, friendName);
         return mainManager.removeFriend(username, friendName);
     }
 
@@ -65,11 +65,7 @@ public class ClientSession extends UnicastRemoteObject implements IClientSession
      */
     @Override
     public boolean sendInvite(String otherUsername, IChatSession ics) throws RemoteException, ClientNotOnlineException {
-        System.out.println(username + " is inviting " + otherUsername + " voor een leuk gesprek");
-        ClientSession otherClientSession = ChatServer.getInstance().getOnlineClients().get(otherUsername);
-        if (otherClientSession == null) throw new ClientNotOnlineException("Could not find user " + otherUsername);
-        ics.setChatName(getFullname());
-        return otherClientSession.invite(ics);
+        return clientSessionManager.sendInvite(otherUsername, ics);
     }
 
     /**
@@ -80,26 +76,15 @@ public class ClientSession extends UnicastRemoteObject implements IClientSession
      */
     @Override
     public boolean invite(IChatSession ics) throws RemoteException {
-        ChatParticipator chatParticipator = new ChatParticipator("BRUCE WAYNE");
-        if (chatInitiator.initialHandshake(ics)) {
-            if (ics.joinSession(chatParticipator, true)) {
-                chatParticipator.setHost(ics.getHost());
-                ChatServer.getInstance().addChatSession(ics, chatParticipator);
-                ics.chooseChatName();
-            } else {
-                System.out.println("Something went wrong while adding SERVER participator to session...");
-                return false;
-            }
-        } else {
-            System.out.println("Something with wrong while handshaking my client...");
-            return false;
-        }
-        return true;
+        return clientSessionManager.invite(ics);
     }
 
-    @Override
-    public ArrayList<Client> search(boolean online) throws RemoteException {
-        return null;
+    public void setClientSessionManager(IClientSessionManager clientSessionManager) {
+        this.clientSessionManager = clientSessionManager;
+    }
+
+    public IChatInitiator getChatInitiator() {
+        return chatInitiator;
     }
 
     @Override

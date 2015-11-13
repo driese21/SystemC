@@ -1,7 +1,5 @@
 package be.uantwerpen;
 
-import be.uantwerpen.managers.MainManager;
-import be.uantwerpen.server.ChatServer;
 import be.uantwerpen.server.ClientAcceptor;
 
 import java.rmi.registry.LocateRegistry;

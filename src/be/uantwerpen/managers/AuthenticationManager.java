@@ -35,6 +35,7 @@ public class AuthenticationManager  {
             if (cs == null) {
                 //client not online, let's log him in
                 cs = new ClientSession(username);
+                cs.setClientSessionManager(new ClientSessionManager(cs));
                 ChatServer.getInstance().addClientSession(username, cs);
                 return cs;
             } else return cs;//client already logged on, let's return the session
