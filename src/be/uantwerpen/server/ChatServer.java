@@ -2,11 +2,13 @@ package be.uantwerpen.server;
 
 import be.uantwerpen.rmiInterfaces.IChatParticipator;
 import be.uantwerpen.rmiInterfaces.IChatSession;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.io.*;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 
 import javax.rmi.ssl.SslRMIServerSocketFactory;
 import javax.rmi.ssl.SslRMIClientSocketFactory;
@@ -17,7 +19,6 @@ import javax.rmi.ssl.SslRMIClientSocketFactory;
 public class ChatServer {
     private static ChatServer instance = new ChatServer();
     private HashMap<String, Client> clients;
-    private HashMap<String, ArrayList<Client>> userFriends;
     private HashMap<String, ClientSession> onlineClients;
     private HashMap<IChatSession, IChatParticipator> chatSessions; //chatsessions that server has joined
 
@@ -29,7 +30,7 @@ public class ChatServer {
         super();
         this.clients = new HashMap<>();
         //Try to read a file to import friendslist, should this fail, create a new one
-        try {
+        /*try {
             File file = new File("friendList.txt");
             FileInputStream f = new FileInputStream(file);
             ObjectInputStream s = new ObjectInputStream(f);
@@ -44,27 +45,19 @@ public class ChatServer {
         } catch (IOException e) {
             //Something went wrong with IO, make a new file later
             userFriends = new HashMap<>();
-        }
+        }*/
 
-        this.userFriends = new HashMap<>();
         this.onlineClients = new HashMap<>();
         this.chatSessions = new HashMap<>();
     }
 
-    public ArrayList<String> getFriends(String username) {
-        ArrayList<String> friends = new ArrayList<>();
-        ArrayList<Client> cfriends = userFriends.get(username);
-        cfriends.forEach(cf -> friends.add(cf.getUsername()));
-        return friends;
+    public HashSet<Client> getFriends(String username) {
+        return clients.get(username).getFriends();
     }
 
     public synchronized void addChatSession(IChatSession chatSession, IChatParticipator chatParticipator) throws RemoteException {
         chatParticipator.addChatSession(chatSession);
         chatSessions.put(chatSession, chatParticipator);
-    }
-
-    public HashMap<IChatSession, IChatParticipator> getChatSessions() {
-        return chatSessions;
     }
 
     public HashMap<String, Client> getClients() {
@@ -83,14 +76,11 @@ public class ChatServer {
         onlineClients.put(username, clientSession);
     }
 
-    public ArrayList<Client> getUserFriends(String username) {
-        return userFriends.get(username);
-    }
-
-    public void updateUserFriends(String username, ArrayList<Client> friends) {
-        userFriends.put(username, friends);
+    public void updateUserFriends(Client user, Client friend, boolean add) {
+        user.updateFriends(friend, add);
+        //userFriends.put(username, friends);
         //Save the friendslist to a file
-        try {
+       /* try {
             File file = new File("friendList.txt");
             FileOutputStream f = new FileOutputStream(file);
             ObjectOutputStream s = new ObjectOutputStream(f);
@@ -98,7 +88,7 @@ public class ChatServer {
             s.close();
         } catch (IOException e) {
             e.printStackTrace();
-        }
+        }*/
 
     }
 }

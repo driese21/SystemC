@@ -1,8 +1,8 @@
 package be.uantwerpen.managers;
 
-import be.uantwerpen.exceptions.ClientNotOnlineException;
+import be.uantwerpen.exceptions.UnknownClientException;
 import be.uantwerpen.interfaces.IMainManager;
-import be.uantwerpen.rmiInterfaces.IChatParticipator;
+import be.uantwerpen.server.Client;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;
@@ -21,7 +21,7 @@ public class MainManager implements IMainManager {
 
     //region UserManager
     @Override
-    public boolean addFriend(String username, String friendName) throws RemoteException {
+    public Client addFriend(String username, String friendName) throws RemoteException, UnknownClientException {
         return userManager.addFriend(username, friendName);
     }
 

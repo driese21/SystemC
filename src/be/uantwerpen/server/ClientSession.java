@@ -1,14 +1,15 @@
 package be.uantwerpen.server;
 
+import be.uantwerpen.enums.ClientStatusType;
+import be.uantwerpen.exceptions.UnknownClientException;
 import be.uantwerpen.interfaces.IClientSessionManager;
 import be.uantwerpen.interfaces.IMainManager;
 import be.uantwerpen.managers.MainManager;
-import be.uantwerpen.rmiInterfaces.IChatInitiator;
+import be.uantwerpen.rmiInterfaces.IClientListener;
 import be.uantwerpen.rmiInterfaces.IChatSession;
 import be.uantwerpen.rmiInterfaces.IClientSession;
 import be.uantwerpen.exceptions.ClientNotOnlineException;
 
-import java.rmi.AlreadyBoundException;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
@@ -20,7 +21,7 @@ import java.util.Date;
  */
 public class ClientSession extends UnicastRemoteObject implements IClientSession {
     private String username;
-    private IChatInitiator chatInitiator;
+    private IClientListener clientListener;
     private Date lastUpdate;
     private IMainManager mainManager;
     private IClientSessionManager clientSessionManager;
@@ -42,8 +43,15 @@ public class ClientSession extends UnicastRemoteObject implements IClientSession
     }
 
     @Override
-    public boolean addFriend(String friendName) throws RemoteException {
-        return mainManager.addFriend(username, friendName);
+    public boolean addFriend(String friendName) throws RemoteException, UnknownClientException {
+        Client friend = mainManager.addFriend(username, friendName);
+        if (friend.getActiveSession() != null) {
+            //notify friend that we added him
+            System.out.println("hey, we found him and we'll notify him!");
+            friend.getActiveSession().notifyFriendListUpdated();
+        } else System.out.println("Friend doesn't have an active session...");
+        notifyFriendListUpdated();
+        return true;
     }
 
     @Override
@@ -56,12 +64,27 @@ public class ClientSession extends UnicastRemoteObject implements IClientSession
         return mainManager.removeFriend(username, friendName);
     }
 
+    @Override
+    public void notifyFriendListUpdated() throws RemoteException {
+        clientListener.friendListUpdated();
+    }
+
+    /**
+     * When the user logs on, it will notify all his friends that he
+     * @param cnt What the user is marked as
+     * @throws RemoteException
+     */
+    @Override
+    public void forwardStatus(ClientStatusType cnt) throws RemoteException {
+
+    }
+
     /**
      * This gets called by a client who wants to set up a chat with another client
      * @param otherUsername the username of the other user
      * @param ics the chatsession created by the initiating client
      * @throws RemoteException
-     * @throws AlreadyBoundException
+     * @throws ClientNotOnlineException
      */
     @Override
     public boolean sendInvite(String otherUsername, IChatSession ics) throws RemoteException, ClientNotOnlineException {
@@ -69,9 +92,8 @@ public class ClientSession extends UnicastRemoteObject implements IClientSession
     }
 
     /**
-     * This gets called by clientSessionA, thus this ClientSession gets an invitation
+     * This gets invoked by clientSessionA, thus this ClientSession gets an invitation
      * @param ics the set up ChatSession
-     * @throws AlreadyBoundException
      * @throws RemoteException
      */
     @Override
@@ -83,13 +105,12 @@ public class ClientSession extends UnicastRemoteObject implements IClientSession
         this.clientSessionManager = clientSessionManager;
     }
 
-    public IChatInitiator getChatInitiator() {
-        return chatInitiator;
+    public IClientListener getClientListener() {
+        return clientListener;
     }
 
-    @Override
-    public void setChatInitiator(IChatInitiator ici) throws RemoteException {
-        chatInitiator = ici;
+    public void setClientListener(IClientListener ici) throws RemoteException {
+        clientListener = ici;
     }
 
     @Override

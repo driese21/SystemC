@@ -1,5 +1,6 @@
 package be.uantwerpen.managers;
 
+import be.uantwerpen.exceptions.UnknownClientException;
 import be.uantwerpen.interfaces.IUserManager;
 import be.uantwerpen.server.ChatServer;
 import be.uantwerpen.server.Client;
@@ -7,6 +8,7 @@ import be.uantwerpen.server.ClientSession;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.function.Consumer;
 
 /**
@@ -15,29 +17,28 @@ import java.util.function.Consumer;
 public class UserManager implements IUserManager {
     protected UserManager() {}
     @Override
-    public boolean addFriend(String username, String friendName) throws RemoteException {
-        ArrayList<Client> friends = ChatServer.getInstance().getUserFriends(username);
-        if (friends == null) friends = new ArrayList<>();
-        Client friend = ChatServer.getInstance().getClient(username);
-        if (friend == null) return false;
-        friends.add(friend);
-        ChatServer.getInstance().updateUserFriends(username, friends);
-        return true;
+    public Client addFriend(String username, String friendName) throws RemoteException, UnknownClientException {
+        Client user = ChatServer.getInstance().getClient(username), friend = ChatServer.getInstance().getClient(friendName);
+        if (friend == null) throw new UnknownClientException("That user does not exist!");
+        if (friend.getActiveSession() == null) System.out.println("[USERMANAGER]Friend's session is null");
+        //mutually add each other
+        ChatServer.getInstance().updateUserFriends(user, friend, true);
+        ChatServer.getInstance().updateUserFriends(friend, user, true);
+        return friend;
     }
 
     @Override
     public boolean removeFriend(String username, String friendName) throws RemoteException {
-        ArrayList<Client> friends = ChatServer.getInstance().getUserFriends(username); //Fetch the user's friends
-        if (friends == null) return false; //User has no friends, thus can't remove any.
-        Client friend = ChatServer.getInstance().getClient(friendName); //Fetch the friend's profile
-        boolean removed = friends.remove(friend); // Returns false if there is no friend to remove
-        ChatServer.getInstance().updateUserFriends(username, friends); //Update the list on the server instance
-        return removed;
+        Client user = ChatServer.getInstance().getClient(username), exFriend = ChatServer.getInstance().getClient(friendName); //Fetch the friend's profile
+        if (exFriend == null) return false;
+        ChatServer.getInstance().updateUserFriends(user, exFriend, false); //Update the list on the server instance
+        ChatServer.getInstance().updateUserFriends(exFriend, user, false); //Update the list on the server instance
+        return true;
     }
 
     @Override
     public ArrayList<String> getFriends(String username, boolean online) throws RemoteException {
-        ArrayList<Client> friends = ChatServer.getInstance().getUserFriends(username);
+        HashSet<Client> friends = ChatServer.getInstance().getFriends(username);
         ArrayList<String> userFriends = new ArrayList<>();
         if (online) friends.forEach(fr -> { if (fr.getActiveSession()!=null) userFriends.add(fr.getUsername()); });
         else friends.forEach(fr -> userFriends.add(fr.getUsername()));

@@ -37,6 +37,7 @@ public class AuthenticationManager  {
                 cs = new ClientSession(username);
                 cs.setClientSessionManager(new ClientSessionManager(cs));
                 ChatServer.getInstance().addClientSession(username, cs);
+                c.setActiveSession(cs);
                 return cs;
             } else return cs;//client already logged on, let's return the session
         } else throw new InvalidCredentialsException("User/password combination is incorrect.");

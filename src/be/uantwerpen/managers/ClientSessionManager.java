@@ -3,7 +3,6 @@ package be.uantwerpen.managers;
 import be.uantwerpen.chat.ChatParticipator;
 import be.uantwerpen.exceptions.ClientNotOnlineException;
 import be.uantwerpen.interfaces.IClientSessionManager;
-import be.uantwerpen.rmiInterfaces.IChatParticipator;
 import be.uantwerpen.rmiInterfaces.IChatSession;
 import be.uantwerpen.server.ChatServer;
 import be.uantwerpen.server.ClientSession;
@@ -34,7 +33,7 @@ public class ClientSessionManager extends Thread implements IClientSessionManage
     @Override
     public boolean invite(IChatSession ics) throws RemoteException {
         ChatParticipator chatParticipator = new ChatParticipator("BRUCE WAYNE", ics);
-        if (clientSession.getChatInitiator().initialHandshake(ics)) {
+        if (clientSession.getClientListener().initialHandshake(ics)) {
             if (ics.joinSession(chatParticipator, true)) {
                 chatParticipator.setHost(ics.getHost());
                 ChatServer.getInstance().addChatSession(ics, chatParticipator);

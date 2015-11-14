@@ -1,6 +1,6 @@
 package be.uantwerpen;
 
-import be.uantwerpen.server.ClientAcceptor;
+import be.uantwerpen.server.ServerListener;
 
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
@@ -12,7 +12,7 @@ public class Server {
     public static void main(String[] args) {
         try {
             //ChatServer cs = ChatServer.getInstance();
-            ClientAcceptor ca = new ClientAcceptor();
+            ServerListener ca = new ServerListener();
             Registry registry = LocateRegistry.createRegistry(11337);
             registry.bind("ChatServer", ca);
         } catch (Exception e) {
