@@ -35,6 +35,7 @@ public class ClientSessionManager extends Thread implements IClientSessionManage
         ChatParticipator chatParticipator = new ChatParticipator("BRUCE WAYNE", ics);
         if (clientSession.getClientListener().initialHandshake(ics)) {
             if (ics.joinSession(chatParticipator, true)) {
+                System.out.println("joining the patty");
                 chatParticipator.setHost(ics.getHost());
                 ChatServer.getInstance().addChatSession(ics, chatParticipator);
                 ics.chooseChatName();

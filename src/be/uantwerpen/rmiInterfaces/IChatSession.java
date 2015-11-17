@@ -14,7 +14,6 @@ public interface IChatSession extends Remote {
     boolean newMessage(String msg, String username) throws RemoteException;
     void notifyParticipators(ChatNotificationType cnt, Message msg) throws RemoteException;
     void notifyParticipators(ChatNotificationType cnt, IChatParticipator newParticipator) throws RemoteException;
-    boolean joinSession(IChatParticipator participator) throws RemoteException;
     boolean joinSession(IChatParticipator participator, boolean silent) throws RemoteException;
     IChatParticipator getHost() throws RemoteException;
     String getChatMessages() throws RemoteException;
