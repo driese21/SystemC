@@ -27,9 +27,9 @@ public class AuthenticationManager  {
 
     public static IClientSession login(String username, String password) throws RemoteException, InvalidCredentialsException {
         Client c = ChatServer.getInstance().getClients().get(username);
-        System.out.println(username);
+        //System.out.println(username);
         if (c == null) throw new InvalidCredentialsException("User does not exist, try registering instead");
-        else if (c.getUsername().equalsIgnoreCase(username) && c.getPassword().equalsIgnoreCase(password)) {
+        else if (c.getUsername().equalsIgnoreCase(username) && c.getPassword().equals(password)) {
             //client exists, let's execute some checks
             ClientSession cs = ChatServer.getInstance().getOnlineClients().get(username);
             if (cs == null) {
@@ -42,5 +42,4 @@ public class AuthenticationManager  {
             } else return cs;//client already logged on, let's return the session
         } else throw new InvalidCredentialsException("User/password combination is incorrect.");
     }
-
 }
