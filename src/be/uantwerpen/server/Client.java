@@ -52,6 +52,17 @@ public class Client implements Comparator<Client> {
         } else friends.remove(friend);
     }
 
+    public boolean isFriend(String username) {
+        boolean isFriend = false;
+        for (Client cl : friends) {
+            if (cl.getUsername().equalsIgnoreCase(username)) {
+                isFriend = true;
+                break;
+            }
+        }
+        return isFriend;
+    }
+
     public HashSet<Client> getFriends() {
         return friends;
     }

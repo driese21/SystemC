@@ -44,14 +44,7 @@ public class ClientSession extends UnicastRemoteObject implements IClientSession
 
     @Override
     public boolean addFriend(String friendName) throws RemoteException, UnknownClientException {
-        Client friend = mainManager.addFriend(username, friendName);
-        if (friend.getActiveSession() != null) {
-            //notify friend that we added him
-            System.out.println("hey, we found him and we'll notify him!");
-            friend.getActiveSession().notifyFriendListUpdated();
-        } else System.out.println("Friend doesn't have an active session...");
-        notifyFriendListUpdated();
-        return true;
+        return mainManager.addFriend(username, friendName);
     }
 
     @Override
@@ -60,13 +53,8 @@ public class ClientSession extends UnicastRemoteObject implements IClientSession
     }
 
     @Override
-    public boolean deleteFriend(String friendName) throws RemoteException {
+    public boolean deleteFriend(String friendName) throws RemoteException, UnknownClientException {
         return mainManager.removeFriend(username, friendName);
-    }
-
-    @Override
-    public void notifyFriendListUpdated() throws RemoteException {
-        clientListener.friendListUpdated();
     }
 
     /**
@@ -80,9 +68,9 @@ public class ClientSession extends UnicastRemoteObject implements IClientSession
     }
 
     /**
-     * This gets called by a client who wants to set up a chat with another client
+     * This gets invoked by a client who wants to set up a chat with another client
      * @param otherUsername the username of the other user
-     * @param ics the chatsession created by the initiating client
+     * @param ics the ChatSession created by the initiating client
      * @throws RemoteException
      * @throws ClientNotOnlineException
      */
@@ -92,7 +80,7 @@ public class ClientSession extends UnicastRemoteObject implements IClientSession
     }
 
     /**
-     * This gets invoked by clientSessionA, thus this ClientSession gets an invitation
+     * This gets invoked by another ClientSession
      * @param ics the set up ChatSession
      * @throws RemoteException
      */

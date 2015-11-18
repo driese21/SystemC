@@ -15,8 +15,7 @@ public interface IClientSession extends Remote {
     boolean updateStatus() throws RemoteException;
     boolean addFriend(String friendName) throws RemoteException, UnknownClientException;
     ArrayList<String> getFriends() throws RemoteException;
-    boolean deleteFriend(String friendName) throws RemoteException;
-    void notifyFriendListUpdated() throws RemoteException;
+    boolean deleteFriend(String friendName) throws RemoteException, UnknownClientException;
     void forwardStatus(ClientStatusType cnt) throws RemoteException;
     boolean sendInvite(String otherUsername, IChatSession ics) throws RemoteException, ClientNotOnlineException;
     boolean invite(IChatSession ics) throws RemoteException;

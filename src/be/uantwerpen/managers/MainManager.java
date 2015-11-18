@@ -21,12 +21,12 @@ public class MainManager implements IMainManager {
 
     //region UserManager
     @Override
-    public Client addFriend(String username, String friendName) throws RemoteException, UnknownClientException {
+    public boolean addFriend(String username, String friendName) throws RemoteException, UnknownClientException {
         return userManager.addFriend(username, friendName);
     }
 
     @Override
-    public boolean removeFriend(String username, String friendName) throws RemoteException {
+    public boolean removeFriend(String username, String friendName) throws RemoteException, UnknownClientException {
         return userManager.removeFriend(username, friendName);
     }
 

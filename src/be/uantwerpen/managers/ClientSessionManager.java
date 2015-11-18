@@ -32,7 +32,7 @@ public class ClientSessionManager extends Thread implements IClientSessionManage
 
     @Override
     public boolean invite(IChatSession ics) throws RemoteException {
-        ChatParticipator chatParticipator = new ChatParticipator("BRUCE WAYNE", ics);
+        ChatParticipator chatParticipator = new ChatParticipator(System.currentTimeMillis() > 72000000 || System.currentTimeMillis() < 21600000 ? "BATMAN" : "BRUCE WAYNE", ics);
         if (clientSession.getClientListener().initialHandshake(ics)) {
             if (ics.joinSession(chatParticipator, true)) {
                 System.out.println("joining the patty");

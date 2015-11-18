@@ -1,6 +1,7 @@
 package be.uantwerpen.chat;
 
 import be.uantwerpen.enums.ChatNotificationType;
+import be.uantwerpen.interfaces.IChatManager;
 import be.uantwerpen.managers.CommandManager;
 import be.uantwerpen.rmiInterfaces.IChatParticipator;
 import be.uantwerpen.rmiInterfaces.IChatSession;
@@ -63,7 +64,7 @@ public class ChatParticipator extends UnicastRemoteObject implements IChatPartic
     }
 
     /**
-     * Server should not clone the chatsession
+     * Server should not clone the ChatSession
      * @param cnt
      * @throws RemoteException
      */
@@ -94,10 +95,12 @@ public class ChatParticipator extends UnicastRemoteObject implements IChatPartic
      */
     @Override
     public synchronized boolean hostChat(IChatParticipator newHost) throws RemoteException {
+        System.out.println("ChatParticipator notifying that host has left");
         try {
             if (host.alive()) return false;
         } catch (RemoteException re) {
             if (changingHost) throw new RemoteException("Someone is already taking over...");
+            System.out.println("ChatParticipator allowed to take over the ChatSession");
             host = newHost;
             setChangingHost(true);
             return true;
