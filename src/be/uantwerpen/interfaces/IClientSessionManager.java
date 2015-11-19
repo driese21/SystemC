@@ -13,4 +13,6 @@ import java.rmi.RemoteException;
 public interface IClientSessionManager {
     boolean sendInvite(String otherUsername, IChatSession ics) throws RemoteException, ClientNotOnlineException;
     boolean invite(IChatSession ics) throws RemoteException;
+    boolean serverJoinSession(IChatSession ics) throws RemoteException;
+    void joinOfflineSession(String otherUsername, IChatSession ics) throws RemoteException;
 }

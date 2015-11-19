@@ -101,7 +101,6 @@ public class ChatParticipator extends UnicastRemoteObject implements IChatPartic
             if (host.alive()) return false;
         } catch (RemoteException re) {
             if (changingHost) throw new RemoteException("Someone is already taking over...");
-            System.out.println("ChatParticipator allowed to take over the ChatSession");
             host = newHost;
             setChangingHost(true);
             return true;
@@ -124,6 +123,6 @@ public class ChatParticipator extends UnicastRemoteObject implements IChatPartic
         this.host = newHost;
         this.chatSession = newSession;
         setChangingHost(false);
-        chatSession.joinSession(this, true);
+        chatSession.joinSession(this);
     }
 }

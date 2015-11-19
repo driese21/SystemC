@@ -1,5 +1,6 @@
 package be.uantwerpen.server;
 
+import be.uantwerpen.chat.OfflineChat;
 import be.uantwerpen.rmiInterfaces.IChatParticipator;
 import be.uantwerpen.rmiInterfaces.IChatSession;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
@@ -21,6 +22,7 @@ public class ChatServer {
     private HashMap<String, Client> clients;
     private HashMap<String, ClientSession> onlineClients;
     private HashMap<IChatSession, IChatParticipator> chatSessions; //chatsessions that server has joined
+    private HashMap<String, ArrayList<OfflineChat>> offlineChatMessages;
 
     public static ChatServer getInstance() {
         return instance;
@@ -49,6 +51,7 @@ public class ChatServer {
 
         this.onlineClients = new HashMap<>();
         this.chatSessions = new HashMap<>();
+        this.offlineChatMessages = new HashMap<>();
     }
 
     public HashSet<Client> getFriends(String username) {
@@ -89,6 +92,5 @@ public class ChatServer {
         } catch (IOException e) {
             e.printStackTrace();
         }*/
-
     }
 }
