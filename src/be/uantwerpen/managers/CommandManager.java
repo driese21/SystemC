@@ -9,13 +9,13 @@ public class CommandManager extends Thread {
     private static HashMap<String, String> commandSet = new HashMap<>();
 
     public static String parse(String command) {
-        if (command.startsWith("add")) {
-            String[] newCommand = command.split(" ");
+        if (command.startsWith("/add")) {
+            String[] newCommand = command.split("::");
             if (newCommand.length == 3)
                 if (addCommand(newCommand[1], newCommand[2])) return "New command added";
-            else return "Wrong notation, try: add commandName reply";
+            else return "Wrong notation, try: /add::commandName::reply";
         }
-        String reply = commandSet.get(command);
+        String reply = commandSet.get(command.replace("/",""));
         return reply == null ? "Command not found." : reply;
     }
 

@@ -42,8 +42,9 @@ public class ChatParticipator extends UnicastRemoteObject implements IChatPartic
 
     @Override
     public void notifyListener(ChatNotificationType cnt, IMessage msg) throws RemoteException, InterruptedException {
-        if (msg.getMessage().startsWith("/")) {
+        if (msg.getMessage().startsWith("/") && !msg.getUsername().equalsIgnoreCase(username)) {
             String reply = CommandManager.parse(msg.getMessage());
+            System.out.println(reply);
             chatSession.newMessage(reply, username);
         }
     }
