@@ -1,14 +1,18 @@
 package be.uantwerpen.managers;
 
 import be.uantwerpen.chat.ChatParticipator;
-import be.uantwerpen.chat.OfflineChat;
+import be.uantwerpen.chat.offline.ChatSession;
 import be.uantwerpen.exceptions.ClientNotOnlineException;
+import be.uantwerpen.exceptions.UnknownClientException;
 import be.uantwerpen.interfaces.IClientSessionManager;
 import be.uantwerpen.rmiInterfaces.IChatSession;
 import be.uantwerpen.server.ChatServer;
+import be.uantwerpen.server.Client;
 import be.uantwerpen.server.ClientSession;
 
+import java.lang.reflect.Array;
 import java.rmi.RemoteException;
+import java.util.ArrayList;
 import java.util.Calendar;
 
 /**
@@ -24,18 +28,27 @@ public class ClientSessionManager extends Thread implements IClientSessionManage
     }
 
     @Override
-    public boolean sendInvite(String otherUsername, IChatSession ics) throws RemoteException, ClientNotOnlineException {
+    public IChatSession sendInvite(String otherUsername, IChatSession ics) throws RemoteException, UnknownClientException {
         System.out.println(clientSession.getUsername() + " is inviting " + otherUsername + " voor een leuk gesprek");
-        ClientSession otherClientSession = ChatServer.getInstance().getOnlineClients().get(otherUsername);
-        if (otherClientSession == null) throw new ClientNotOnlineException("Could not find user " + otherUsername);
-        ics.setChatName(clientSession.getFullname());
-        return otherClientSession.invite(ics);
+        Client friend = ChatServer.getInstance().getClient(otherUsername);
+        //user is offline
+        if (friend.getActiveSession() == null) {
+            System.out.println("user is not online");
+            ChatParticipator serverParticipator = getServerParticipator(null);
+            ChatSession offlineSession = new ChatSession(serverParticipator, otherUsername);
+            serverJoinSession(serverParticipator,offlineSession);
+            return offlineSession;
+        }
+        if (friend.getActiveSession().invite(ics)) {
+            return null;
+        } else throw new RemoteException("Something went wrong while inviting the other user");
     }
 
     @Override
     public boolean invite(IChatSession ics) throws RemoteException {
         if (clientSession.getClientListener().initialHandshake(ics)) {
-            serverJoinSession(ics);
+            ChatParticipator chatParticipator = getServerParticipator(ics);
+            serverJoinSession(chatParticipator, ics);
         } else {
             System.out.println("Something with wrong while handshaking my client...");
             return false;
@@ -43,12 +56,18 @@ public class ClientSessionManager extends Thread implements IClientSessionManage
         return true;
     }
 
+    private ChatParticipator getServerParticipator(IChatSession ics) throws RemoteException {
+        ChatParticipator chatParticipator;
+        if (ics == null) chatParticipator = new ChatParticipator((Calendar.getInstance().get(Calendar.HOUR_OF_DAY) < 6 || Calendar.getInstance().get(Calendar.HOUR_OF_DAY) > 20 ? "BATMAN" : "BRUCE WAYNE"));
+        else chatParticipator = new ChatParticipator((Calendar.getInstance().get(Calendar.HOUR_OF_DAY) < 6 || Calendar.getInstance().get(Calendar.HOUR_OF_DAY) > 20 ? "BATMAN" : "BRUCE WAYNE"), ics);
+        return chatParticipator;
+    }
+
     @Override
-    public boolean serverJoinSession(IChatSession ics) throws RemoteException {
-        ChatParticipator chatParticipator = new ChatParticipator((Calendar.getInstance().get(Calendar.HOUR_OF_DAY) < 6 || Calendar.getInstance().get(Calendar.HOUR_OF_DAY) > 20 ? "BATMAN" : "BRUCE WAYNE"), ics);
-        if (ics.joinSession(chatParticipator)) {
-            chatParticipator.setHost(ics.getHost());
-            ChatServer.getInstance().addChatSession(ics, chatParticipator);
+    public boolean serverJoinSession(ChatParticipator participator, IChatSession ics) throws RemoteException {
+        if (ics.joinSession(participator)) {
+            participator.setHost(ics.getHost());
+            ChatServer.getInstance().addChatSession(ics, participator);
             ics.chooseChatName();
             return true;
         } else {
@@ -58,7 +77,9 @@ public class ClientSessionManager extends Thread implements IClientSessionManage
     }
 
     @Override
-    public void joinOfflineSession(String otherUsername, IChatSession ics) throws RemoteException {
-        serverJoinSession(ics);
+    public ArrayList<IChatSession> getOfflineMessages() {
+        ArrayList<ChatSession> offlineMessages = ChatServer.getInstance().getOfflineChatMessages(clientSession.getUsername());
+        ArrayList<IChatSession> offlineMessagesToReturn = new ArrayList<>(offlineMessages);
+        return offlineMessagesToReturn;
     }
 }

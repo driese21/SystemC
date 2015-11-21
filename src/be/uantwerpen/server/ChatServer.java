@@ -1,18 +1,13 @@
 package be.uantwerpen.server;
 
-import be.uantwerpen.chat.OfflineChat;
+import be.uantwerpen.chat.offline.ChatSession;
 import be.uantwerpen.rmiInterfaces.IChatParticipator;
 import be.uantwerpen.rmiInterfaces.IChatSession;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
-import java.io.*;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-
-import javax.rmi.ssl.SslRMIServerSocketFactory;
-import javax.rmi.ssl.SslRMIClientSocketFactory;
 
 /**
  * Created by Dries on 16/10/2015.
@@ -22,7 +17,7 @@ public class ChatServer {
     private HashMap<String, Client> clients;
     private HashMap<String, ClientSession> onlineClients;
     private HashMap<IChatSession, IChatParticipator> chatSessions; //chatsessions that server has joined
-    private HashMap<String, ArrayList<OfflineChat>> offlineChatMessages;
+    private HashMap<String, ArrayList<ChatSession>> offlineChatMessages;
 
     public static ChatServer getInstance() {
         return instance;
@@ -92,5 +87,10 @@ public class ChatServer {
         } catch (IOException e) {
             e.printStackTrace();
         }*/
+    }
+
+    public ArrayList<ChatSession> getOfflineChatMessages(String username) {
+        //todo delete offline session as soon as user read them
+        return offlineChatMessages.get(username);
     }
 }

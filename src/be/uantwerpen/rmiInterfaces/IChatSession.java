@@ -1,7 +1,7 @@
 package be.uantwerpen.rmiInterfaces;
 
 import be.uantwerpen.enums.ChatNotificationType;
-import sun.plugin2.message.Message;
+import be.uantwerpen.chat.offline.Message;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
@@ -16,11 +16,9 @@ public interface IChatSession extends Remote {
     void notifyParticipators(ChatNotificationType cnt, IChatParticipator newParticipator) throws RemoteException;
     boolean joinSession(IChatParticipator participator) throws RemoteException;
     IChatParticipator getHost() throws RemoteException;
-    String getChatMessages() throws RemoteException;
     String getChatName() throws RemoteException;
     void setChatName(String chatName) throws RemoteException;
     void chooseChatName() throws RemoteException;
     ArrayList<IChatParticipator> getOtherParticipators() throws RemoteException;
-    void setParticipators(ArrayList<IChatParticipator> participators) throws RemoteException;
     boolean hostQuit(IChatParticipator newHost) throws RemoteException;
 }

@@ -75,7 +75,7 @@ public class ClientSession extends UnicastRemoteObject implements IClientSession
      * @throws ClientNotOnlineException
      */
     @Override
-    public boolean sendInvite(String otherUsername, IChatSession ics) throws RemoteException, ClientNotOnlineException {
+    public IChatSession sendInvite(String otherUsername, IChatSession ics) throws RemoteException, UnknownClientException {
         return clientSessionManager.sendInvite(otherUsername, ics);
     }
 
@@ -101,6 +101,15 @@ public class ClientSession extends UnicastRemoteObject implements IClientSession
         clientListener = ici;
     }
 
+    public boolean userAlive() {
+        try {
+            if (clientListener.alive()) return true;
+        } catch (RemoteException e) {
+            return false;
+        }
+        return false;
+    }
+
     @Override
     public String getUsername() {
         return username;
@@ -109,5 +118,10 @@ public class ClientSession extends UnicastRemoteObject implements IClientSession
     @Override
     public String getFullname() throws RemoteException {
         return ChatServer.getInstance().getClient(username).getFullName();
+    }
+
+    @Override
+    public ArrayList<IChatSession> getOfflineMessage() throws RemoteException {
+        return clientSessionManager.getOfflineMessages();
     }
 }

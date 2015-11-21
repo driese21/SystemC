@@ -20,7 +20,8 @@ public class Client implements Comparator<Client> {
     }
 
     public ClientSession getActiveSession() {
-        return activeSession;
+        if (activeSession.userAlive()) return activeSession;
+        else return null;
     }
 
     public void setActiveSession(ClientSession activeSession) {

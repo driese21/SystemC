@@ -22,6 +22,10 @@ public class ChatParticipator extends UnicastRemoteObject implements IChatPartic
 
     public ChatParticipator() throws RemoteException { }
 
+    public ChatParticipator(String username) throws RemoteException {
+        this.username = username;
+    }
+
     public ChatParticipator(String username, IChatSession chatSession) throws RemoteException {
         this.username = username;
         this.chatSession = chatSession;
@@ -41,7 +45,7 @@ public class ChatParticipator extends UnicastRemoteObject implements IChatPartic
     }
 
     @Override
-    public void notifyListener(ChatNotificationType cnt, IMessage msg) throws RemoteException, InterruptedException {
+    public void notifyListener(ChatNotificationType cnt, IMessage msg) throws RemoteException {
         if (msg.getMessage().startsWith("/") && !msg.getUsername().equalsIgnoreCase(username)) {
             String reply = CommandManager.parse(msg.getMessage());
             System.out.println(reply);
@@ -55,7 +59,7 @@ public class ChatParticipator extends UnicastRemoteObject implements IChatPartic
     }
 
     @Override
-    public String getName() throws RemoteException {
+    public String getUserName() throws RemoteException {
         return username;
     }
 

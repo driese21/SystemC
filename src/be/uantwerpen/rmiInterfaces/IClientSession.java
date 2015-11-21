@@ -4,6 +4,7 @@ import be.uantwerpen.exceptions.ClientNotOnlineException;
 import be.uantwerpen.enums.ClientStatusType;
 import be.uantwerpen.exceptions.UnknownClientException;
 
+import java.lang.reflect.Array;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
@@ -17,9 +18,10 @@ public interface IClientSession extends Remote {
     ArrayList<String> getFriends() throws RemoteException;
     boolean deleteFriend(String friendName) throws RemoteException, UnknownClientException;
     void forwardStatus(ClientStatusType cnt) throws RemoteException;
-    boolean sendInvite(String otherUsername, IChatSession ics) throws RemoteException, ClientNotOnlineException;
+    IChatSession sendInvite(String otherUsername, IChatSession ics) throws RemoteException, UnknownClientException;
     boolean invite(IChatSession ics) throws RemoteException;
     void setClientListener(IClientListener ici) throws RemoteException;
     String getUsername() throws RemoteException;
     String getFullname() throws RemoteException;
+    ArrayList<IChatSession> getOfflineMessage() throws RemoteException;
 }
