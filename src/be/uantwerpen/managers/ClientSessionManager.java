@@ -2,7 +2,6 @@ package be.uantwerpen.managers;
 
 import be.uantwerpen.chat.ChatParticipator;
 import be.uantwerpen.chat.offline.ChatSession;
-import be.uantwerpen.exceptions.ClientNotOnlineException;
 import be.uantwerpen.exceptions.UnknownClientException;
 import be.uantwerpen.interfaces.IClientSessionManager;
 import be.uantwerpen.rmiInterfaces.IChatSession;
@@ -10,7 +9,6 @@ import be.uantwerpen.server.ChatServer;
 import be.uantwerpen.server.Client;
 import be.uantwerpen.server.ClientSession;
 
-import java.lang.reflect.Array;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -31,6 +29,7 @@ public class ClientSessionManager extends Thread implements IClientSessionManage
     public IChatSession sendInvite(String otherUsername, IChatSession ics) throws RemoteException, UnknownClientException {
         System.out.println(clientSession.getUsername() + " is inviting " + otherUsername + " voor een leuk gesprek");
         Client friend = ChatServer.getInstance().getClient(otherUsername);
+        if (friend == null) throw new UnknownClientException("That user does not exist!");
         //user is offline
         if (friend.getActiveSession() == null) {
             System.out.println("user is not online");

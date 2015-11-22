@@ -20,7 +20,7 @@ public class ServerListener extends UnicastRemoteObject implements IServerListen
     }
 
     @Override
-    public synchronized IClientSession login(String username, String password) throws RemoteException, InvalidCredentialsException {
+    public IClientSession login(String username, String password) throws RemoteException, InvalidCredentialsException {
         return AuthenticationManager.login(username, password);
     }
 }

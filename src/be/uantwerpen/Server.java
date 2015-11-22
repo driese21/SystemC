@@ -11,7 +11,6 @@ import java.rmi.registry.Registry;
 public class Server {
     public static void main(String[] args) {
         try {
-            //ChatServer cs = ChatServer.getInstance();
             ServerListener ca = new ServerListener();
             Registry registry = LocateRegistry.createRegistry(11337);
             registry.bind("ChatServer", ca);
