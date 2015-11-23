@@ -8,6 +8,7 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 
 /**
  * Created by Dries on 16/10/2015.
@@ -17,7 +18,8 @@ public class ChatServer {
     private HashMap<String, Client> clients;
     private HashMap<String, ClientSession> onlineClients;
     private HashMap<IChatSession, IChatParticipator> chatSessions; //chatsessions that server has joined
-    private HashMap<String, ArrayList<ChatSession>> offlineChatMessages;
+    private HashMap<String, HashSet<ChatSession>> offlineChatMessages;
+    private int sessionId;
 
     public static ChatServer getInstance() {
         return instance;
@@ -47,6 +49,7 @@ public class ChatServer {
         this.onlineClients = new HashMap<>();
         this.chatSessions = new HashMap<>();
         this.offlineChatMessages = new HashMap<>();
+        this.sessionId = 0;
     }
 
     public HashSet<Client> getFriends(String username) {
@@ -76,32 +79,34 @@ public class ChatServer {
 
     public void updateUserFriends(Client user, Client friend, boolean add) {
         user.updateFriends(friend, add);
-        //userFriends.put(username, friends);
-        //Save the friendslist to a file
-       /* try {
-            File file = new File("friendList.txt");
-            FileOutputStream f = new FileOutputStream(file);
-            ObjectOutputStream s = new ObjectOutputStream(f);
-            s.writeObject(userFriends);
-            s.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }*/
     }
 
     public void addOfflineSession(String username, ChatSession offlineSession) {
-        ArrayList<ChatSession> sessions = offlineChatMessages.get(username);
-        if (sessions == null) sessions = new ArrayList<>();
+        HashSet<ChatSession> sessions = offlineChatMessages.get(username);
+        if (sessions == null) sessions = new HashSet<>();
         sessions.add(offlineSession);
         offlineChatMessages.put(username, sessions);
     }
 
     public ArrayList<ChatSession> getOfflineChatMessages(String username) {
         System.out.println(username);
-        return offlineChatMessages.get(username);
+        return new ArrayList<>(offlineChatMessages.get(username));
     }
 
     public void offlineMessagesRead(String username) {
-        offlineChatMessages.remove(username);
+        System.out.println("Removing offline messages for " + username);
+        if (offlineChatMessages.remove(username) != null) System.out.println("User had offline ChatSessions, now removed");
+        else System.out.println("User didn't have offline sessions, nothing happened");
+    }
+
+    public void offlineMessagesRead(String username, IChatSession iChatSession) {
+        ChatSession chatSession = (ChatSession) iChatSession;
+        HashSet<ChatSession> chatSessions = offlineChatMessages.get(username);
+        chatSessions.stream().filter(cs -> cs.equals(chatSession)).forEach(chatSessions::remove);
+        offlineChatMessages.put(username, chatSessions);
+    }
+
+    public int getSessionId() {
+        return sessionId++;
     }
 }

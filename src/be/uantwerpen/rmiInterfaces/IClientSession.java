@@ -1,5 +1,6 @@
 package be.uantwerpen.rmiInterfaces;
 
+import be.uantwerpen.chat.offline.ChatSession;
 import be.uantwerpen.exceptions.ClientNotOnlineException;
 import be.uantwerpen.enums.ClientStatusType;
 import be.uantwerpen.exceptions.UnknownClientException;
@@ -25,4 +26,5 @@ public interface IClientSession extends Remote {
     String getFullname() throws RemoteException;
     ArrayList<IChatSession> getOfflineMessage() throws RemoteException;
     void offlineMessagesRead() throws RemoteException;
+    void offlineMessagesRead(IChatSession iChatSession) throws RemoteException;
 }

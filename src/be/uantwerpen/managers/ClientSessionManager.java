@@ -34,7 +34,8 @@ public class ClientSessionManager extends Thread implements IClientSessionManage
         if (friend.getActiveSession() == null) {
             System.out.println("user is not online");
             ChatParticipator serverParticipator = getServerParticipator(null);
-            ChatSession offlineSession = new ChatSession(serverParticipator, otherUsername);
+            int sessionId = ChatServer.getInstance().getSessionId();
+            ChatSession offlineSession = new ChatSession(sessionId, serverParticipator, otherUsername);
             if (serverJoinSession(serverParticipator,offlineSession)) ChatServer.getInstance().addOfflineSession(otherUsername,offlineSession);
             return offlineSession;
         }
@@ -87,5 +88,10 @@ public class ClientSessionManager extends Thread implements IClientSessionManage
     @Override
     public void offlineMessagesRead() {
         ChatServer.getInstance().offlineMessagesRead(clientSession.getUsername());
+    }
+
+    @Override
+    public void offlineMessagesRead(IChatSession iChatSession) {
+        ChatServer.getInstance().offlineMessagesRead(clientSession.getUsername(), iChatSession);
     }
 }

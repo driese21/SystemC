@@ -14,6 +14,7 @@ import java.util.ArrayList;
  * Created by Dries on 21/11/2015.
  */
 public class ChatSession extends UnicastRemoteObject implements IChatSession {
+    private int id;
     private ArrayList<IChatParticipator> participators;
     private ArrayList<Message> messages;
     private IChatParticipator host;
@@ -24,10 +25,15 @@ public class ChatSession extends UnicastRemoteObject implements IChatSession {
         this.messages = new ArrayList<>();
     }
 
-    public ChatSession(ChatParticipator chatParticipator, String offlineUser) throws RemoteException {
+    public ChatSession(int id, ChatParticipator chatParticipator, String offlineUser) throws RemoteException {
         this();
+        this.id = id;
         this.host = chatParticipator;
         this.offlineUser = offlineUser;
+    }
+
+    public int getId() {
+        return id;
     }
 
     @Override
@@ -97,5 +103,10 @@ public class ChatSession extends UnicastRemoteObject implements IChatSession {
     @Override
     public ArrayList<IMessage> getMessages() throws RemoteException {
         return new ArrayList<>(messages);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return getId() == ((ChatSession)obj).getId();
     }
 }

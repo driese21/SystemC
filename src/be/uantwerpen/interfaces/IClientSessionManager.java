@@ -19,4 +19,5 @@ public interface IClientSessionManager {
     boolean serverJoinSession(ChatParticipator participator, IChatSession ics) throws RemoteException;
     ArrayList<IChatSession> getOfflineMessages();
     void offlineMessagesRead();
+    void offlineMessagesRead(IChatSession iChatSession);
 }
