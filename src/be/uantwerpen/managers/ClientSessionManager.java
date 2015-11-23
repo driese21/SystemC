@@ -35,7 +35,7 @@ public class ClientSessionManager extends Thread implements IClientSessionManage
             System.out.println("user is not online");
             ChatParticipator serverParticipator = getServerParticipator(null);
             ChatSession offlineSession = new ChatSession(serverParticipator, otherUsername);
-            serverJoinSession(serverParticipator,offlineSession);
+            if (serverJoinSession(serverParticipator,offlineSession)) ChatServer.getInstance().addOfflineSession(otherUsername,offlineSession);
             return offlineSession;
         }
         if (friend.getActiveSession().invite(ics)) {
@@ -77,8 +77,15 @@ public class ClientSessionManager extends Thread implements IClientSessionManage
 
     @Override
     public ArrayList<IChatSession> getOfflineMessages() {
+        System.out.println(clientSession.getUsername() + " wants to receive his offline messages");
         ArrayList<ChatSession> offlineMessages = ChatServer.getInstance().getOfflineChatMessages(clientSession.getUsername());
-        ArrayList<IChatSession> offlineMessagesToReturn = new ArrayList<>(offlineMessages);
-        return offlineMessagesToReturn;
+        if (offlineMessages == null) return null;
+        System.out.println(clientSession.getUsername() + " has offline messages...");
+        return new ArrayList<>(offlineMessages);
+    }
+
+    @Override
+    public void offlineMessagesRead() {
+        ChatServer.getInstance().offlineMessagesRead(clientSession.getUsername());
     }
 }

@@ -17,6 +17,7 @@ public interface IChatSession extends Remote {
     boolean joinSession(IChatParticipator participator) throws RemoteException;
     IChatParticipator getHost() throws RemoteException;
     String getChatName() throws RemoteException;
+    ArrayList<IMessage> getMessages() throws RemoteException;
     void setChatName(String chatName) throws RemoteException;
     void chooseChatName() throws RemoteException;
     ArrayList<IChatParticipator> getOtherParticipators() throws RemoteException;

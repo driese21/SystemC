@@ -24,4 +24,5 @@ public interface IClientSession extends Remote {
     String getUsername() throws RemoteException;
     String getFullname() throws RemoteException;
     ArrayList<IChatSession> getOfflineMessage() throws RemoteException;
+    void offlineMessagesRead() throws RemoteException;
 }

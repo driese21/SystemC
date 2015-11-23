@@ -4,6 +4,7 @@ import be.uantwerpen.chat.ChatParticipator;
 import be.uantwerpen.enums.ChatNotificationType;
 import be.uantwerpen.rmiInterfaces.IChatParticipator;
 import be.uantwerpen.rmiInterfaces.IChatSession;
+import be.uantwerpen.rmiInterfaces.IMessage;
 
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
@@ -91,5 +92,10 @@ public class ChatSession extends UnicastRemoteObject implements IChatSession {
     private boolean isAllowedToSend(String userName) {
         if (offlineUser.equalsIgnoreCase(userName)) return false;
         return true;
+    }
+
+    @Override
+    public ArrayList<IMessage> getMessages() throws RemoteException {
+        return new ArrayList<>(messages);
     }
 }

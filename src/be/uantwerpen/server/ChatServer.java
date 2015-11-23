@@ -89,8 +89,19 @@ public class ChatServer {
         }*/
     }
 
+    public void addOfflineSession(String username, ChatSession offlineSession) {
+        ArrayList<ChatSession> sessions = offlineChatMessages.get(username);
+        if (sessions == null) sessions = new ArrayList<>();
+        sessions.add(offlineSession);
+        offlineChatMessages.put(username, sessions);
+    }
+
     public ArrayList<ChatSession> getOfflineChatMessages(String username) {
-        //todo delete offline session as soon as user read them
+        System.out.println(username);
         return offlineChatMessages.get(username);
+    }
+
+    public void offlineMessagesRead(String username) {
+        offlineChatMessages.remove(username);
     }
 }
