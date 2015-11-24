@@ -28,24 +28,6 @@ public class ChatServer {
     private ChatServer() {
         super();
         this.clients = new HashMap<>();
-        //Try to read a file to import friendslist, should this fail, create a new one
-        /*try {
-            File file = new File("friendList.txt");
-            FileInputStream f = new FileInputStream(file);
-            ObjectInputStream s = new ObjectInputStream(f);
-            userFriends = (HashMap<String, ArrayList<Client>>) s.readObject();
-            s.close();
-        } catch (FileNotFoundException e) {
-            //Make a new file later
-            userFriends = new HashMap<>();
-        } catch (ClassNotFoundException e) {
-            //This definitely should never happen
-            e.printStackTrace();
-        } catch (IOException e) {
-            //Something went wrong with IO, make a new file later
-            userFriends = new HashMap<>();
-        }*/
-
         this.onlineClients = new HashMap<>();
         this.chatSessions = new HashMap<>();
         this.offlineChatMessages = new HashMap<>();
@@ -90,7 +72,9 @@ public class ChatServer {
 
     public ArrayList<ChatSession> getOfflineChatMessages(String username) {
         System.out.println(username);
-        return new ArrayList<>(offlineChatMessages.get(username));
+        HashSet<ChatSession> offlineSessions = offlineChatMessages.get(username);
+        if (offlineSessions == null) return null;
+        else return new ArrayList<>(offlineChatMessages.get(username));
     }
 
     public void offlineMessagesRead(String username) {
