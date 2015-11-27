@@ -29,7 +29,7 @@ public class UserManager implements IUserManager {
     public boolean addFriend(String username, String friendName) throws RemoteException, UnknownClientException {
         if (username.equalsIgnoreCase(friendName)) throw new UnknownClientException("You can't add yourself silly...");
         Client user = ChatServer.getInstance().getClient(username), friend = ChatServer.getInstance().getClient(friendName);
-        if (user == null) throw new UnknownClientException("User'ss username didn't yield a Client, this is very wrong!");
+        if (user == null) throw new UnknownClientException("User's username didn't yield a Client, this is very wrong!");
         if (friend == null) throw new UnknownClientException("The user you want too add does not exist!");
         if (user.isFriend(friendName) && friend.isFriend(username)) return false; //already friends
         //mutually add each other
@@ -45,7 +45,7 @@ public class UserManager implements IUserManager {
         if (exFriend == null) throw new UnknownClientException("The user you want too remove does not exist!");
         if (!user.isFriend(friendName) && !exFriend.isFriend(username)) return true; //not even friends
         //mutually remove each other
-        updateFriends(user,exFriend,true);
+        updateFriends(user,exFriend,false);
         return true;
     }
 
@@ -65,7 +65,7 @@ public class UserManager implements IUserManager {
 
     @Override
     public ArrayList<String> getFriends(String username, boolean online) throws RemoteException {
-        HashSet<Client> friends = ChatServer.getInstance().getFriends(username);
+        HashSet<Client> friends = ChatServer.getInstance().getClient(username).getFriends();
         ArrayList<String> userFriends = new ArrayList<>();
         if (online) friends.forEach(fr -> { if (fr.getActiveSession()!=null) userFriends.add(fr.getUsername()); });
         else friends.forEach(fr -> userFriends.add(fr.getUsername()));
