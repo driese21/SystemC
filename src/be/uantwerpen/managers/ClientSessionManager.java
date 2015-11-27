@@ -6,7 +6,7 @@ import be.uantwerpen.exceptions.UnknownClientException;
 import be.uantwerpen.interfaces.IClientSessionManager;
 import be.uantwerpen.rmiInterfaces.IChatSession;
 import be.uantwerpen.server.ChatServer;
-import be.uantwerpen.server.Client;
+import be.uantwerpen.server.client.Client;
 import be.uantwerpen.server.ClientSession;
 
 import java.rmi.RemoteException;

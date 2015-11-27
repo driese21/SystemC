@@ -3,18 +3,23 @@ package be.uantwerpen.server;
 import be.uantwerpen.chat.offline.ChatSession;
 import be.uantwerpen.rmiInterfaces.IChatParticipator;
 import be.uantwerpen.rmiInterfaces.IChatSession;
+import be.uantwerpen.server.client.Client;
 import be.uantwerpen.server.client.ClientKey;
 
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
+import javax.xml.bind.Unmarshaller;
+import java.io.File;
 import java.rmi.RemoteException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Created by Dries on 16/10/2015.
  */
 public class ChatServer {
+    private String filename = "clients.xml";
     private static ChatServer instance = new ChatServer();
     private HashMap<ClientKey, Client> clients;
     private HashMap<IChatSession, IChatParticipator> chatSessions; //chatsessions that server has joined
@@ -28,17 +33,74 @@ public class ChatServer {
     private ChatServer() {
         super();
         this.clients = new HashMap<>();
+
+        //this.clients = new HashMap<>();
+        //todo file IO doen (check if file exist, read if so)
+        try {
+            this.clients = readClientsXml(filename);
+            if(clients == null || clients.isEmpty()){
+                this.clients = new HashMap<>();
+            }
+        } catch (JAXBException e) {
+            //Something went wrong, making new file later.
+            this.clients = new HashMap<>();
+        }
+
         this.chatSessions = new HashMap<>();
         this.offlineChatMessages = new HashMap<>();
         this.sessionId = 0;
     }
 
-    public void addClient(Client client) { clients.put(new ClientKey(client.getUsername()), client); }
+    public void addClient(Client client) {
+        clients.put(new ClientKey(client.getUsername()), client);
+        try {
+            writeToXML(filename);
+        } catch (JAXBException e) {
+            e.printStackTrace();
+        }
+    }
 
-    public Client getClient(String username) { return clients.get(new ClientKey(username)); }
+    public Client getClient(String username) { return getClient(new ClientKey(username)); }
+
+    public Client getClient(ClientKey ck) {
+        return clients.get(ck);
+    }
 
     public void updateUserFriends(Client user, Client friend, boolean add) {
         user.updateFriends(friend, add);
+        try {
+            writeToXML(filename);
+        } catch (JAXBException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private HashMap<ClientKey, Client> readClientsXml(String filename) throws JAXBException {
+        JAXBContext jaxbContext = JAXBContext.newInstance(Clients.class);
+        Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
+
+        //We had written this file in marshalling example
+        Clients xmlClients = (Clients) jaxbUnmarshaller.unmarshal( new File(filename) );
+
+        System.out.println(xmlClients);
+
+        return xmlClients.getClients();
+    }
+
+    public void writeToXML(String filename) throws JAXBException {
+        //Marshall to XML
+        JAXBContext context = JAXBContext.newInstance(Clients.class);
+
+        Marshaller m = context.createMarshaller();
+        m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+
+        Clients xmlClients = new Clients(clients);
+
+        m.marshal(xmlClients, new File(filename));
+    }
+
+    public HashSet<Client> getFriends(String username) {
+        return getClient(username).getFriends().stream().map(this::getClient).collect(Collectors.toCollection(HashSet::new));
     }
 
     public synchronized void addChatSession(IChatSession chatSession, IChatParticipator chatParticipator) throws RemoteException {

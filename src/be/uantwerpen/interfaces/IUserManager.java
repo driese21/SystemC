@@ -1,7 +1,6 @@
 package be.uantwerpen.interfaces;
 
 import be.uantwerpen.exceptions.UnknownClientException;
-import be.uantwerpen.server.Client;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;

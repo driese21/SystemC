@@ -3,7 +3,7 @@ package be.uantwerpen.managers;
 import be.uantwerpen.exceptions.InvalidCredentialsException;
 import be.uantwerpen.rmiInterfaces.IClientSession;
 import be.uantwerpen.server.ChatServer;
-import be.uantwerpen.server.Client;
+import be.uantwerpen.server.client.Client;
 import be.uantwerpen.server.ClientSession;
 
 import java.rmi.RemoteException;

@@ -1,22 +1,35 @@
-package be.uantwerpen.server;
+package be.uantwerpen.server.client;
 
+import be.uantwerpen.server.ClientSession;
+
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 import java.util.Comparator;
 import java.util.HashSet;
 
 /**
  * Created by Dries on 16/10/2015.
  */
+@XmlRootElement(name = "client")
+@XmlAccessorType(XmlAccessType.FIELD)
 public class Client implements Comparator<Client> {
     private String username, fullName;
     private String password;
+    @XmlTransient
     private ClientSession activeSession;
-    private HashSet<Client> friends;
+    private HashSet<ClientKey> friends;
+
+    public Client() {
+        this.friends = new HashSet<>();
+    }
 
     public Client(String username, String password, String fullName) {
+        this();
         this.username = username;
         this.fullName = fullName;
         this.password = password;
-        this.friends = new HashSet<>();
     }
 
     public ClientSession getActiveSession() {
@@ -50,14 +63,14 @@ public class Client implements Comparator<Client> {
 
     public void updateFriends(Client friend, boolean add) {
         if (add) {
-            friends.add(friend);
-        } else friends.remove(friend);
+            friends.add(new ClientKey(friend.username));
+        } else friends.remove(new ClientKey(friend.username));
     }
 
     public boolean isFriend(String username) {
         boolean isFriend = false;
-        for (Client cl : friends) {
-            if (cl.getUsername().equalsIgnoreCase(username)) {
+        for (ClientKey cl : friends) {
+            if (cl.equals(new ClientKey(username))) {
                 isFriend = true;
                 break;
             }
@@ -65,7 +78,7 @@ public class Client implements Comparator<Client> {
         return isFriend;
     }
 
-    public HashSet<Client> getFriends() {
+    public HashSet<ClientKey> getFriends() {
         return friends;
     }
 

@@ -3,13 +3,12 @@ package be.uantwerpen.managers;
 import be.uantwerpen.exceptions.UnknownClientException;
 import be.uantwerpen.interfaces.IUserManager;
 import be.uantwerpen.server.ChatServer;
-import be.uantwerpen.server.Client;
-import be.uantwerpen.server.ClientSession;
+import be.uantwerpen.server.client.Client;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 /**
  * Created by Dries on 26/10/2015.
@@ -65,7 +64,7 @@ public class UserManager implements IUserManager {
 
     @Override
     public ArrayList<String> getFriends(String username, boolean online) throws RemoteException {
-        HashSet<Client> friends = ChatServer.getInstance().getClient(username).getFriends();
+        HashSet<Client> friends = ChatServer.getInstance().getClient(username).getFriends().stream().map(ck -> ChatServer.getInstance().getClient(ck)).collect(Collectors.toCollection(HashSet::new));
         ArrayList<String> userFriends = new ArrayList<>();
         if (online) friends.forEach(fr -> { if (fr.getActiveSession()!=null) userFriends.add(fr.getUsername()); });
         else friends.forEach(fr -> userFriends.add(fr.getUsername()));
