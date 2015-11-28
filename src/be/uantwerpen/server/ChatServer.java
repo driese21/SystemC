@@ -23,18 +23,13 @@ import java.util.HashSet;
  */
 public class ChatServer {
     private String filename = "clients.xml";
-    private static ChatServer instance = new ChatServer();
+    //private static ChatServer instance = new ChatServer();
     private HashMap<ClientKey, Client> clients;
     private HashMap<IChatSession, IChatParticipator> chatSessions; //chatsessions that server has joined
     private HashMap<ClientKey, HashSet<ChatSession>> offlineChatMessages;
     private int sessionId;
 
-    public static ChatServer getInstance() {
-        return instance;
-    }
-
-    private ChatServer() {
-        super();
+    public ChatServer() {
         this.clients = new HashMap<>();
 
         try {
@@ -84,7 +79,7 @@ public class ChatServer {
         //We had written this file in marshalling example
         Clients xmlClients = (Clients) jaxbUnmarshaller.unmarshal( new File(filename) );
 
-        System.out.println(xmlClients);
+        System.out.println("[CHATSERVER readClientsXml()]" + xmlClients);
 
         return xmlClients.getClients();
     }

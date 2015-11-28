@@ -9,17 +9,17 @@ import java.util.ArrayList;
 /**
  * Created by Dries on 26/10/2015.
  */
-public class MainManager implements IMainManager {
+public class MainManager /*implements IMainManager*/ {
     private ClientSessionManager clientSessionManager;
     private UserManager userManager;
 
-    public MainManager() {
+    /*public MainManager() {
         this.clientSessionManager = new ClientSessionManager();
         this.userManager = new UserManager();
-    }
+    }*/
 
     //region UserManager
-    @Override
+    /*@Override
     public boolean addFriend(String username, String friendName) throws RemoteException, UnknownClientException {
         return userManager.addFriend(username, friendName);
     }
@@ -37,5 +37,5 @@ public class MainManager implements IMainManager {
     //endregion
 
     @Override
-    public void run() { }
+    public void run() { }*/
 }

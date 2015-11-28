@@ -14,7 +14,13 @@ import java.util.stream.Collectors;
  * Created by Dries on 26/10/2015.
  */
 public class UserManager implements IUserManager {
+    private ChatServer chatServer;
+
     protected UserManager() {}
+
+    public UserManager(ChatServer chatServer) {
+        this.chatServer = chatServer;
+    }
 
     /**
      * Adds a friend for a given user, also mutually adds the user to the friend's list
@@ -27,7 +33,7 @@ public class UserManager implements IUserManager {
     @Override
     public boolean addFriend(String username, String friendName) throws RemoteException, UnknownClientException {
         if (username.equalsIgnoreCase(friendName)) throw new UnknownClientException("You can't add yourself silly...");
-        Client user = ChatServer.getInstance().getClient(username), friend = ChatServer.getInstance().getClient(friendName);
+        Client user = chatServer.getClient(username), friend = chatServer.getClient(friendName);
         if (user == null) throw new UnknownClientException("User's username didn't yield a Client, this is very wrong!");
         if (friend == null) throw new UnknownClientException("The user you want too add does not exist!");
         if (user.isFriend(friendName) && friend.isFriend(username)) return false; //already friends
@@ -39,7 +45,7 @@ public class UserManager implements IUserManager {
     @Override
     public boolean removeFriend(String username, String friendName) throws RemoteException, UnknownClientException {
         if (username.equalsIgnoreCase(friendName)) throw new UnknownClientException("You can't remove yourself silly...");
-        Client user = ChatServer.getInstance().getClient(username), exFriend = ChatServer.getInstance().getClient(friendName); //Fetch the friend's profile
+        Client user = chatServer.getClient(username), exFriend = chatServer.getClient(friendName); //Fetch the friend's profile
         if (user == null) throw new UnknownClientException("User'ss username didn't yield a Client, this is very wrong!");
         if (exFriend == null) throw new UnknownClientException("The user you want too remove does not exist!");
         if (!user.isFriend(friendName) && !exFriend.isFriend(username)) return true; //not even friends
@@ -64,7 +70,7 @@ public class UserManager implements IUserManager {
 
     @Override
     public ArrayList<String> getFriends(String username) throws RemoteException {
-        HashSet<Client> friends = ChatServer.getInstance().getClient(username).getFriends().stream().map(ck -> ChatServer.getInstance().getClient(ck)).collect(Collectors.toCollection(HashSet::new));
+        HashSet<Client> friends = chatServer.getClient(username).getFriends().stream().map(ck -> chatServer.getClient(ck)).collect(Collectors.toCollection(HashSet::new));
         ArrayList<String> userFriends = new ArrayList<>();
         friends.forEach(fr -> userFriends.add(fr.getUsername()));
         return userFriends;

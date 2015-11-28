@@ -12,21 +12,27 @@ import java.rmi.RemoteException;
  * Created by Dries on 4/11/2015.
  */
 public class AuthenticationManager  {
-    public static IClientSession register(String username, String password, String fullName) throws RemoteException, InvalidCredentialsException {
-        Client c = ChatServer.getInstance().getClient(username);
+    private ChatServer chatServer;
+
+    public AuthenticationManager(ChatServer chatServer) {
+        this.chatServer = chatServer;
+    }
+
+    public IClientSession register(String username, String password, String fullName) throws RemoteException, InvalidCredentialsException {
+        Client c = chatServer.getClient(username);
         if (c != null) {
             System.out.println("User already exists.");
             return login(username, password);
         }
         c = new Client(username, password, fullName);
         //if client does not exist, add him
-        ChatServer.getInstance().addClient(c);
+        chatServer.addClient(c);
         System.out.println(c + " registered, logging in automatically.");
         return login(c.getUsername(), password);
     }
 
-    public static IClientSession login(String username, String password) throws RemoteException, InvalidCredentialsException {
-        Client c = ChatServer.getInstance().getClient(username);
+    public IClientSession login(String username, String password) throws RemoteException, InvalidCredentialsException {
+        Client c = chatServer.getClient(username);
         //System.out.println(username);
         if (c == null) throw new InvalidCredentialsException("User does not exist, try registering instead");
         else if (c.getUsername().equalsIgnoreCase(username) && c.getPassword().equals(password)) {
@@ -34,8 +40,8 @@ public class AuthenticationManager  {
             ClientSession cs = c.getActiveSession();
             if (cs == null) {
                 //client not online, let's log him in
-                cs = new ClientSession(username);
-                cs.setClientSessionManager(new ClientSessionManager(cs));
+                cs = new ClientSession(username, chatServer, new UserManager(chatServer));
+                cs.setClientSessionManager(new ClientSessionManager(cs, chatServer));
                 c.setActiveSession(cs);
                 return cs;
             } else return cs;//client already logged on, let's return the session

@@ -18,25 +18,31 @@ import java.util.Calendar;
  */
 public class ClientSessionManager extends Thread implements IClientSessionManager {
     private ClientSession clientSession;
+    private ChatServer chatServer;
 
     protected ClientSessionManager() { }
 
-    protected ClientSessionManager(ClientSession clientSession) {
+    /*protected ClientSessionManager(ClientSession clientSession) {
         this.clientSession = clientSession;
+    }*/
+
+    protected ClientSessionManager(ClientSession clientSession, ChatServer chatServer) {
+        this.clientSession = clientSession;
+        this.chatServer = chatServer;
     }
 
     @Override
     public IChatSession sendInvite(String otherUsername, IChatSession ics) throws RemoteException, UnknownClientException {
         System.out.println(clientSession.getUsername() + " is inviting " + otherUsername + " voor een leuk gesprek");
-        Client friend = ChatServer.getInstance().getClient(otherUsername);
+        Client friend = chatServer.getClient(otherUsername);
         if (friend == null) throw new UnknownClientException("That user does not exist!");
         //user is offline
         if (friend.getActiveSession() == null) {
             System.out.println("user is not online");
             ChatParticipator serverParticipator = getServerParticipator(null);
-            int sessionId = ChatServer.getInstance().getSessionId();
+            int sessionId = chatServer.getSessionId();
             ChatSession offlineSession = new ChatSession(sessionId, serverParticipator, otherUsername);
-            if (serverJoinSession(serverParticipator,offlineSession)) ChatServer.getInstance().addOfflineSession(otherUsername,offlineSession);
+            if (serverJoinSession(serverParticipator,offlineSession)) chatServer.addOfflineSession(otherUsername,offlineSession);
             return offlineSession;
         }
         if (friend.getActiveSession().invite(ics)) {
@@ -67,7 +73,7 @@ public class ClientSessionManager extends Thread implements IClientSessionManage
     public boolean serverJoinSession(ChatParticipator participator, IChatSession ics) throws RemoteException {
         if (ics.joinSession(participator)) {
             participator.setHost(ics.getHost());
-            ChatServer.getInstance().addChatSession(ics, participator);
+            chatServer.addChatSession(ics, participator);
             ics.chooseChatName();
             return true;
         } else {
@@ -79,7 +85,7 @@ public class ClientSessionManager extends Thread implements IClientSessionManage
     @Override
     public ArrayList<IChatSession> getOfflineMessages() {
         System.out.println(clientSession.getUsername() + " wants to receive his offline messages");
-        ArrayList<ChatSession> offlineMessages = ChatServer.getInstance().getOfflineChatMessages(clientSession.getUsername());
+        ArrayList<ChatSession> offlineMessages = chatServer.getOfflineChatMessages(clientSession.getUsername());
         if (offlineMessages == null) return null;
         System.out.println(clientSession.getUsername() + " has offline messages...");
         return new ArrayList<>(offlineMessages);
@@ -87,11 +93,11 @@ public class ClientSessionManager extends Thread implements IClientSessionManage
 
     @Override
     public void offlineMessagesRead() {
-        ChatServer.getInstance().offlineMessagesRead(clientSession.getUsername());
+        chatServer.offlineMessagesRead(clientSession.getUsername());
     }
 
     @Override
     public void offlineMessagesRead(IChatSession iChatSession) {
-        ChatServer.getInstance().offlineMessagesRead(clientSession.getUsername(), iChatSession);
+        chatServer.offlineMessagesRead(clientSession.getUsername(), iChatSession);
     }
 }

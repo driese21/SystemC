@@ -4,6 +4,7 @@ import be.uantwerpen.enums.ClientStatusType;
 import be.uantwerpen.exceptions.UnknownClientException;
 import be.uantwerpen.interfaces.IClientSessionManager;
 import be.uantwerpen.interfaces.IMainManager;
+import be.uantwerpen.interfaces.IUserManager;
 import be.uantwerpen.managers.MainManager;
 import be.uantwerpen.rmiInterfaces.IClientListener;
 import be.uantwerpen.rmiInterfaces.IChatSession;
@@ -23,17 +24,19 @@ public class ClientSession extends UnicastRemoteObject implements IClientSession
     private String username;
     private IClientListener clientListener;
     private Date lastUpdate;
-    private IMainManager mainManager;
+    private IUserManager userManager;
     private IClientSessionManager clientSessionManager;
+    private ChatServer chatServer;
 
     public ClientSession() throws RemoteException {
-        mainManager = new MainManager();
+        this.lastUpdate = Calendar.getInstance().getTime();
     }
 
-    public ClientSession(String username) throws RemoteException {
+    public ClientSession(String username, ChatServer chatServer, IUserManager userManager) throws RemoteException {
         this();
         this.username = username;
-        this.lastUpdate = Calendar.getInstance().getTime();
+        this.chatServer = chatServer;
+        this.userManager = userManager;
     }
 
     @Override
@@ -44,17 +47,17 @@ public class ClientSession extends UnicastRemoteObject implements IClientSession
 
     @Override
     public boolean addFriend(String friendName) throws RemoteException, UnknownClientException {
-        return mainManager.addFriend(username, friendName);
+        return userManager.addFriend(username, friendName);
     }
 
     @Override
     public ArrayList<String> getFriends() throws RemoteException {
-        return mainManager.getFriends(username);
+        return userManager.getFriends(username);
     }
 
     @Override
     public boolean deleteFriend(String friendName) throws RemoteException, UnknownClientException {
-        return mainManager.removeFriend(username, friendName);
+        return userManager.removeFriend(username, friendName);
     }
 
     /**
@@ -115,9 +118,10 @@ public class ClientSession extends UnicastRemoteObject implements IClientSession
         return username;
     }
 
+    //// TODO: 28/11/2015 put responsibility for this with a manager
     @Override
     public String getFullname() throws RemoteException {
-        return ChatServer.getInstance().getClient(username).getFullName();
+        return chatServer.getClient(username).getFullName();
     }
 
     @Override
