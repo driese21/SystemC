@@ -32,6 +32,11 @@ public class ClientSessionManager extends Thread implements IClientSessionManage
     }
 
     @Override
+    public String getFullName() {
+        return chatServer.getClient(clientSession.getUsername()).getFullName();
+    }
+
+    @Override
     public IChatSession sendInvite(String otherUsername, IChatSession ics) throws RemoteException, UnknownClientException {
         System.out.println(clientSession.getUsername() + " is inviting " + otherUsername + " voor een leuk gesprek");
         Client friend = chatServer.getClient(otherUsername);

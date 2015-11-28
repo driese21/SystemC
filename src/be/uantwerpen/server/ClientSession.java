@@ -3,9 +3,7 @@ package be.uantwerpen.server;
 import be.uantwerpen.enums.ClientStatusType;
 import be.uantwerpen.exceptions.UnknownClientException;
 import be.uantwerpen.interfaces.IClientSessionManager;
-import be.uantwerpen.interfaces.IMainManager;
 import be.uantwerpen.interfaces.IUserManager;
-import be.uantwerpen.managers.MainManager;
 import be.uantwerpen.rmiInterfaces.IClientListener;
 import be.uantwerpen.rmiInterfaces.IChatSession;
 import be.uantwerpen.rmiInterfaces.IClientSession;
@@ -26,16 +24,14 @@ public class ClientSession extends UnicastRemoteObject implements IClientSession
     private Date lastUpdate;
     private IUserManager userManager;
     private IClientSessionManager clientSessionManager;
-    private ChatServer chatServer;
 
     public ClientSession() throws RemoteException {
         this.lastUpdate = Calendar.getInstance().getTime();
     }
 
-    public ClientSession(String username, ChatServer chatServer, IUserManager userManager) throws RemoteException {
+    public ClientSession(String username, IUserManager userManager) throws RemoteException {
         this();
         this.username = username;
-        this.chatServer = chatServer;
         this.userManager = userManager;
     }
 
@@ -118,10 +114,9 @@ public class ClientSession extends UnicastRemoteObject implements IClientSession
         return username;
     }
 
-    //// TODO: 28/11/2015 put responsibility for this with a manager
     @Override
-    public String getFullname() throws RemoteException {
-        return chatServer.getClient(username).getFullName();
+    public String getFullName() throws RemoteException {
+        return clientSessionManager.getFullName();
     }
 
     @Override

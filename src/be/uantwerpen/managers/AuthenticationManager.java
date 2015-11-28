@@ -40,7 +40,7 @@ public class AuthenticationManager  {
             ClientSession cs = c.getActiveSession();
             if (cs == null) {
                 //client not online, let's log him in
-                cs = new ClientSession(username, chatServer, new UserManager(chatServer));
+                cs = new ClientSession(username, new UserManager(chatServer));
                 cs.setClientSessionManager(new ClientSessionManager(cs, chatServer));
                 c.setActiveSession(cs);
                 return cs;

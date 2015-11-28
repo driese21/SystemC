@@ -23,7 +23,6 @@ import java.util.HashSet;
  */
 public class ChatServer {
     private String filename = "clients.xml";
-    //private static ChatServer instance = new ChatServer();
     private HashMap<ClientKey, Client> clients;
     private HashMap<IChatSession, IChatParticipator> chatSessions; //chatsessions that server has joined
     private HashMap<ClientKey, HashSet<ChatSession>> offlineChatMessages;

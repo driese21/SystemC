@@ -20,4 +20,5 @@ public interface IClientSessionManager {
     ArrayList<IChatSession> getOfflineMessages();
     void offlineMessagesRead();
     void offlineMessagesRead(IChatSession iChatSession);
+    String getFullName();
 }

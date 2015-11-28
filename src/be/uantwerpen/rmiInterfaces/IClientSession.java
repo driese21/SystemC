@@ -23,7 +23,7 @@ public interface IClientSession extends Remote {
     boolean invite(IChatSession ics) throws RemoteException;
     void setClientListener(IClientListener ici) throws RemoteException;
     String getUsername() throws RemoteException;
-    String getFullname() throws RemoteException;
+    String getFullName() throws RemoteException;
     ArrayList<IChatSession> getOfflineMessage() throws RemoteException;
     void offlineMessagesRead() throws RemoteException;
     void offlineMessagesRead(IChatSession iChatSession) throws RemoteException;
