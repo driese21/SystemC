@@ -66,8 +66,8 @@ public class UserManager implements IUserManager {
     public ArrayList<String> getFriends(String username, boolean online) throws RemoteException {
         HashSet<Client> friends = ChatServer.getInstance().getClient(username).getFriends().stream().map(ck -> ChatServer.getInstance().getClient(ck)).collect(Collectors.toCollection(HashSet::new));
         ArrayList<String> userFriends = new ArrayList<>();
-        if (online) friends.forEach(fr -> { if (fr.getActiveSession()!=null) userFriends.add(fr.getUsername()); });
-        else friends.forEach(fr -> userFriends.add(fr.getUsername()));
+        //if (online) friends.forEach(fr -> { if (fr.getActiveSession()!=null) userFriends.add(fr.getUsername()); });
+        /*else*/ friends.forEach(fr -> userFriends.add(fr.getUsername()));
         return userFriends;
     }
 }

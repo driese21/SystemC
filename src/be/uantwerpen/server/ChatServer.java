@@ -34,8 +34,6 @@ public class ChatServer {
         super();
         this.clients = new HashMap<>();
 
-        //this.clients = new HashMap<>();
-        //todo file IO doen (check if file exist, read if so)
         try {
             this.clients = readClientsXml(filename);
             if(clients == null || clients.isEmpty()){
@@ -60,10 +58,12 @@ public class ChatServer {
         }
     }
 
-    public Client getClient(String username) { return getClient(new ClientKey(username)); }
+    public Client getClient(String username) {
+        return getClient(new ClientKey(username)); }
 
     public Client getClient(ClientKey ck) {
-        return clients.get(ck);
+        Client client = clients.get(ck);
+        return client;
     }
 
     public void updateUserFriends(Client user, Client friend, boolean add) {

@@ -12,7 +12,6 @@ import javax.xml.bind.annotation.XmlTransient;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class ClientKey {
     private final String username;
-    @XmlTransient
     private final int hashCode;
 
     public ClientKey() {
