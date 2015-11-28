@@ -1,5 +1,6 @@
 package be.uantwerpen.server;
 
+import be.uantwerpen.Utilities.XMLHandler;
 import be.uantwerpen.chat.offline.ChatSession;
 import be.uantwerpen.rmiInterfaces.IChatParticipator;
 import be.uantwerpen.rmiInterfaces.IChatSession;
@@ -11,6 +12,7 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import java.io.File;
+import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -22,7 +24,6 @@ import java.util.HashSet;
  * Created by Dries on 16/10/2015.
  */
 public class ChatServer {
-    private String filename = "clients.xml";
     private HashMap<ClientKey, Client> clients;
     private HashMap<IChatSession, IChatParticipator> chatSessions; //chatsessions that server has joined
     private HashMap<ClientKey, HashSet<ChatSession>> offlineChatMessages;
@@ -32,11 +33,14 @@ public class ChatServer {
         this.clients = new HashMap<>();
 
         try {
-            this.clients = readClientsXml(filename);
+            this.clients = XMLHandler.readClientsXml();
             if(clients == null || clients.isEmpty()){
                 this.clients = new HashMap<>();
             }
         } catch (JAXBException e) {
+            //Something went wrong, making new file later.
+            this.clients = new HashMap<>();
+        } catch (IOException e) {
             //Something went wrong, making new file later.
             this.clients = new HashMap<>();
         }
@@ -49,7 +53,7 @@ public class ChatServer {
     public void addClient(Client client) {
         clients.put(getClientKey(client.getUsername()), client);
         try {
-            writeToXML(filename);
+            XMLHandler.writeClientToXML(client.getFullName(), client);
         } catch (JAXBException e) {
             e.printStackTrace();
         }
@@ -60,40 +64,6 @@ public class ChatServer {
     public Client getClient(ClientKey ck) { return clients.get(ck); }
 
     private ClientKey getClientKey(String username) { return new ClientKey(username); }
-
-    //// TODO: 28/11/2015 Seb, check of ge ergens anders dit kunt opvangen
-    public void updateUserFriends(Client user, Client friend, boolean add) {
-        user.updateFriends(friend, add);
-        try {
-            writeToXML(filename);
-        } catch (JAXBException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private HashMap<ClientKey, Client> readClientsXml(String filename) throws JAXBException {
-        JAXBContext jaxbContext = JAXBContext.newInstance(Clients.class);
-        Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
-
-        //We had written this file in marshalling example
-        Clients xmlClients = (Clients) jaxbUnmarshaller.unmarshal( new File(filename) );
-
-        System.out.println("[CHATSERVER readClientsXml()]" + xmlClients);
-
-        return xmlClients.getClients();
-    }
-
-    public void writeToXML(String filename) throws JAXBException {
-        //Marshall to XML
-        JAXBContext context = JAXBContext.newInstance(Clients.class);
-
-        Marshaller m = context.createMarshaller();
-        m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-
-        Clients xmlClients = new Clients(clients);
-
-        m.marshal(xmlClients, new File(filename));
-    }
 
 /*    public HashSet<Client> getFriends(String username) {
         return getClient(username).getFriends().stream().map(this::getClient).collect(Collectors.toCollection(HashSet::new));

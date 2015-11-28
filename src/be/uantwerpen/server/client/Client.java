@@ -1,7 +1,9 @@
 package be.uantwerpen.server.client;
 
+import be.uantwerpen.Utilities.XMLHandler;
 import be.uantwerpen.server.ClientSession;
 
+import javax.xml.bind.JAXBException;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -65,6 +67,12 @@ public class Client implements Comparator<Client> {
         if (add) {
             friends.add(new ClientKey(friend.username));
         } else friends.remove(new ClientKey(friend.username));
+
+        try {
+            XMLHandler.writeClientToXML(this.getFullName(), this);
+        } catch (JAXBException e) {
+            e.printStackTrace();
+        }
     }
 
     public boolean isFriend(String username) {
