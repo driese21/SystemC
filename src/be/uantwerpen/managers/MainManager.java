@@ -30,8 +30,8 @@ public class MainManager implements IMainManager {
     }
 
     @Override
-    public ArrayList<String> getFriends(String username, boolean online) throws RemoteException {
-        return userManager.getFriends(username, online);
+    public ArrayList<String> getFriends(String username) throws RemoteException {
+        return userManager.getFriends(username);
     }
 
     //endregion

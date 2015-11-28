@@ -55,19 +55,18 @@ public class UserManager implements IUserManager {
      * @param addFriend true if we want to add him/her, false if we want to remove him/her
      */
     private void updateFriends(Client user, Client friend, boolean addFriend) throws RemoteException {
-        ChatServer.getInstance().updateUserFriends(user, friend, addFriend);
-        ChatServer.getInstance().updateUserFriends(friend, user, addFriend);
+        user.updateFriends(friend, addFriend);
+        friend.updateFriends(user, addFriend);
         //notify user's ClientListener that their friend's list has been updated
         user.getActiveSession().getClientListener().friendListUpdated();
         friend.getActiveSession().getClientListener().friendListUpdated();
     }
 
     @Override
-    public ArrayList<String> getFriends(String username, boolean online) throws RemoteException {
+    public ArrayList<String> getFriends(String username) throws RemoteException {
         HashSet<Client> friends = ChatServer.getInstance().getClient(username).getFriends().stream().map(ck -> ChatServer.getInstance().getClient(ck)).collect(Collectors.toCollection(HashSet::new));
         ArrayList<String> userFriends = new ArrayList<>();
-        //if (online) friends.forEach(fr -> { if (fr.getActiveSession()!=null) userFriends.add(fr.getUsername()); });
-        /*else*/ friends.forEach(fr -> userFriends.add(fr.getUsername()));
+        friends.forEach(fr -> userFriends.add(fr.getUsername()));
         return userFriends;
     }
 }

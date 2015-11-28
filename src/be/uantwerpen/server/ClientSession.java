@@ -49,7 +49,7 @@ public class ClientSession extends UnicastRemoteObject implements IClientSession
 
     @Override
     public ArrayList<String> getFriends() throws RemoteException {
-        return mainManager.getFriends(username, true);
+        return mainManager.getFriends(username);
     }
 
     @Override

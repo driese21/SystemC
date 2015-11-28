@@ -14,6 +14,9 @@ import java.io.File;
 import java.rmi.RemoteException;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 
 /**
  * Created by Dries on 16/10/2015.
@@ -50,7 +53,7 @@ public class ChatServer {
     }
 
     public void addClient(Client client) {
-        clients.put(new ClientKey(client.getUsername()), client);
+        clients.put(getClientKey(client.getUsername()), client);
         try {
             writeToXML(filename);
         } catch (JAXBException e) {
@@ -58,14 +61,13 @@ public class ChatServer {
         }
     }
 
-    public Client getClient(String username) {
-        return getClient(new ClientKey(username)); }
+    public Client getClient(String username) { return clients.get(getClientKey(username)); }
 
-    public Client getClient(ClientKey ck) {
-        Client client = clients.get(ck);
-        return client;
-    }
+    public Client getClient(ClientKey ck) { return clients.get(ck); }
 
+    private ClientKey getClientKey(String username) { return new ClientKey(username); }
+
+    //// TODO: 28/11/2015 Seb, check of ge ergens anders dit kunt opvangen
     public void updateUserFriends(Client user, Client friend, boolean add) {
         user.updateFriends(friend, add);
         try {
@@ -99,9 +101,9 @@ public class ChatServer {
         m.marshal(xmlClients, new File(filename));
     }
 
-    public HashSet<Client> getFriends(String username) {
+/*    public HashSet<Client> getFriends(String username) {
         return getClient(username).getFriends().stream().map(this::getClient).collect(Collectors.toCollection(HashSet::new));
-    }
+    }*/
 
     public synchronized void addChatSession(IChatSession chatSession, IChatParticipator chatParticipator) throws RemoteException {
         chatParticipator.addChatSession(chatSession);
@@ -116,7 +118,7 @@ public class ChatServer {
     }
 
     public ArrayList<ChatSession> getOfflineChatMessages(String username) {
-        ClientKey ck = new ClientKey(username);
+        ClientKey ck = getClientKey(username);
         HashSet<ChatSession> offlineSessions = offlineChatMessages.get(ck);
         if (offlineSessions == null) return null;
         else return new ArrayList<>(offlineChatMessages.get(ck));
@@ -124,13 +126,13 @@ public class ChatServer {
 
     public void offlineMessagesRead(String username) {
         System.out.println("Removing offline messages for " + username);
-        if (offlineChatMessages.remove(new ClientKey(username)) != null) System.out.println("User had offline ChatSessions, now removed");
+        if (offlineChatMessages.remove(getClientKey(username)) != null) System.out.println("User had offline ChatSessions, now removed");
         else System.out.println("User didn't have offline sessions, nothing happened");
     }
 
     public void offlineMessagesRead(String username, IChatSession iChatSession) {
         ChatSession chatSession = (ChatSession) iChatSession;
-        ClientKey ck = new ClientKey(username);
+        ClientKey ck = getClientKey(username);
         HashSet<ChatSession> chatSessions = offlineChatMessages.get(ck);
         chatSessions.stream().filter(cs -> cs.equals(chatSession)).forEach(chatSessions::remove);
         offlineChatMessages.put(ck, chatSessions);
