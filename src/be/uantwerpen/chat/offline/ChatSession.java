@@ -12,6 +12,11 @@ import java.util.ArrayList;
 
 /**
  * Created by Dries on 21/11/2015.
+ *
+ * This class creates a new chat session. A chat session brings 'chat participators' together and is responsible for
+ * pushing messages and notifications. This chat session is meant for offline messages, so it sends messages to the
+ * server. The server sends these messages to the intended client when he is online.
+ *
  */
 public class ChatSession extends UnicastRemoteObject implements IChatSession {
     private int id;
@@ -36,6 +41,13 @@ public class ChatSession extends UnicastRemoteObject implements IChatSession {
         return id;
     }
 
+    /**
+     * Sends a new message to the server, and tells for which user the message is intended
+      *@param msg the message
+     * @param username the intended user
+     * @return
+     * @throws RemoteException
+     */
     @Override
     public synchronized boolean newMessage(String msg, String username) throws RemoteException {
         if (isAllowedToSend(username)) {
@@ -46,11 +58,23 @@ public class ChatSession extends UnicastRemoteObject implements IChatSession {
         } else throw new RemoteException("This is a read-only ChatSession");
     }
 
+    /**
+     * Sends a new message to chat participators when there is a new offline message
+     * @param cnt the notification type
+     * @param msg the offline message
+     * @throws RemoteException
+     */
     @Override
     public void notifyParticipators(ChatNotificationType cnt, Message msg) throws RemoteException {
         new Thread(new DeliveryAgent(participators, msg, cnt)).start();
     }
 
+    /**
+     * Sends a new message to chat participators when a new chat participator joins the session
+     * @param cnt the notification type
+     * @param newParticipator the new chat participator
+     * @throws RemoteException
+     */
     @Override
     public void notifyParticipators(ChatNotificationType cnt, IChatParticipator newParticipator) throws RemoteException {
         new Thread(new DeliveryAgent(participators, newParticipator, cnt)).start();
@@ -82,6 +106,10 @@ public class ChatSession extends UnicastRemoteObject implements IChatSession {
     @Override
     public void setChatName(String chatName) throws RemoteException { }
 
+    /**
+     * A user can change the name of a chat session he has joined
+     * @throws RemoteException
+     */
     @Override
     public void chooseChatName() throws RemoteException { }
 
@@ -90,6 +118,13 @@ public class ChatSession extends UnicastRemoteObject implements IChatSession {
         return participators;
     }
 
+    /**
+     * Normally used for online chatsessions when the chat host leaves the session.
+     * This is irrelevant in an offline chat.
+     * @param newHost a client in the chatsession that takes over as host
+     * @return
+     * @throws RemoteException
+     */
     @Override
     public boolean hostQuit(IChatParticipator newHost) throws RemoteException {
         throw new RemoteException("Can't change host of offline ChatSession");

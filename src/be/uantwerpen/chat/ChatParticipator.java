@@ -13,6 +13,8 @@ import java.rmi.ServerException;
 
 /**
  * Created by Dries on 23/10/2015.
+ *
+ * A chat participator is a client who has joined a chat session
  */
 public class ChatParticipator extends UnicastRemoteObject implements IChatParticipator {
     private String username;
@@ -44,6 +46,12 @@ public class ChatParticipator extends UnicastRemoteObject implements IChatPartic
         this.chatSession = chatSession;
     }
 
+    /**
+     * If a message starts with "/", the server will read it as a command
+     * @param cnt the notification type
+     * @param msg the message
+     * @throws RemoteException
+     */
     @Override
     public void notifyListener(ChatNotificationType cnt, IMessage msg) throws RemoteException {
         if (msg.getMessage().startsWith("/") && !msg.getUsername().equalsIgnoreCase(username)) {
@@ -69,7 +77,7 @@ public class ChatParticipator extends UnicastRemoteObject implements IChatPartic
     }
 
     /**
-     * Server should not clone the ChatSession
+     * Server should not clone the ChatSession, this is done by the participators
      * @param cnt
      * @throws RemoteException
      */
@@ -122,6 +130,14 @@ public class ChatParticipator extends UnicastRemoteObject implements IChatPartic
         return true;
     }
 
+    /**
+     * When the host dies, a new host takes over and starts a 'new' chat session.
+     * This is a cloned version of the original chat session.
+     *
+     * @param newHost   the new host
+     * @param newSession    the new session
+     * @throws RemoteException
+     */
     @Override
     public void hostChanged(IChatParticipator newHost, IChatSession newSession) throws RemoteException {
         this.host = newHost;

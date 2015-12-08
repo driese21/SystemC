@@ -9,6 +9,8 @@ import java.util.stream.Collectors;
 
 /**
  * Created by Dries on 21/11/2015.
+ *
+ * This class delivers the messages to the participators.
  */
 public class DeliveryAgent extends Thread {
     private ArrayList<IChatParticipator> participators;
@@ -28,6 +30,12 @@ public class DeliveryAgent extends Thread {
         this.chatNotificationType = chatNotificationType;
     }
 
+    /**
+     * Checks if all participators are reachable.
+     * If a participator is unreachable, first send the message to the reachable participators,
+     * and then retry delivery to the unreachable participator 5 times.
+     *
+     */
     private void deliver() {
         ArrayList<IChatParticipator> failedDelivery = new ArrayList<>(participators.size());
         failedDelivery.addAll(participators.stream().filter(chatParticipator -> !deliver(chatParticipator)).collect(Collectors.toList()));
@@ -47,6 +55,12 @@ public class DeliveryAgent extends Thread {
         }
     }
 
+    /**
+     * Takes care of the delivery to reachable chat participators
+     *
+     * @param participator the participator(s) who need to get the message
+     * @return
+     */
     private boolean deliver(IChatParticipator participator) {
         try {
             if (message != null) participator.notifyListener(chatNotificationType, message);

@@ -9,6 +9,8 @@ import java.util.Date;
 
 /**
  * Created by Dries on 21/11/2015.
+ *
+ * This class creates the message itself
  */
 public class Message extends UnicastRemoteObject implements IMessage {
     private String message, username;
