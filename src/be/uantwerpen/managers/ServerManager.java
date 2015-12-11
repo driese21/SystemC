@@ -24,6 +24,12 @@ public class ServerManager {
         registerServer();
     }
 
+    /**
+     * Setup a RMI connection
+     *
+     * @throws RemoteException
+     * @throws AlreadyBoundException
+     */
     private void registerServer() throws RemoteException, AlreadyBoundException {
         Registry registry = LocateRegistry.createRegistry(11337);
         registry.bind("ChatServer", serverListener);

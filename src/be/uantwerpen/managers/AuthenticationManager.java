@@ -10,6 +10,8 @@ import java.rmi.RemoteException;
 
 /**
  * Created by Dries on 4/11/2015.
+ *
+ * This class makes sure that a client can register and log on to the system.
  */
 public class AuthenticationManager  {
     private ChatServer chatServer;
@@ -18,6 +20,17 @@ public class AuthenticationManager  {
         this.chatServer = chatServer;
     }
 
+    /**
+     * A new client has to create an account to be able to log on to the system.
+     * If the client already exists, and the credentials are correct: log on to the system.
+     *
+     * @param username username that the client has to choose
+     * @param password new password
+     * @param fullName client's full name
+     * @return true if the automatic login succeeds
+     * @throws RemoteException
+     * @throws InvalidCredentialsException
+     */
     public IClientSession register(String username, String password, String fullName) throws RemoteException, InvalidCredentialsException {
         Client c = chatServer.getClient(username);
         if (c != null) {
@@ -31,6 +44,16 @@ public class AuthenticationManager  {
         return login(c.getUsername(), password);
     }
 
+    /**
+     * An existing user can log on to the system. If the user doesn't yet exist, try registering instead.
+     * The method also makes sure that the user/password combination is correct.
+     *
+     * @param username username of the user that want's to log in
+     * @param password his password
+     * @return true if the login succeeds
+     * @throws RemoteException
+     * @throws InvalidCredentialsException
+     */
     public IClientSession login(String username, String password) throws RemoteException, InvalidCredentialsException {
         Client c = chatServer.getClient(username);
         //System.out.println(username);

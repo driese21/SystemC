@@ -45,7 +45,7 @@ public class ChatSession extends UnicastRemoteObject implements IChatSession {
      * Sends a new message to the server, and tells for which user the message is intended
       *@param msg the message
      * @param username the intended user
-     * @return
+     * @return true if the user is allowed to send a message
      * @throws RemoteException
      */
     @Override
@@ -122,7 +122,7 @@ public class ChatSession extends UnicastRemoteObject implements IChatSession {
      * Normally used for online chatsessions when the chat host leaves the session.
      * This is irrelevant in an offline chat.
      * @param newHost a client in the chatsession that takes over as host
-     * @return
+     * @return 
      * @throws RemoteException
      */
     @Override

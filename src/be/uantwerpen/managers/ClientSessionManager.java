@@ -15,6 +15,9 @@ import java.util.Calendar;
 
 /**
  * Created by Dries on 26/10/2015.
+ *
+ * This class helps clients to invite other clients to a chat session.
+ *
  */
 public class ClientSessionManager extends Thread implements IClientSessionManager {
     private ClientSession clientSession;
@@ -36,6 +39,15 @@ public class ClientSessionManager extends Thread implements IClientSessionManage
         return chatServer.getClient(clientSession.getUsername()).getFullName();
     }
 
+    /**
+     * Tries to send an invite to an existing user. If the user is offline, send an offline message.
+     *
+     * @param otherUsername the invitee
+     * @param ics the chat session
+     * @return true if an offlineSession is started
+     * @throws RemoteException
+     * @throws UnknownClientException
+     */
     @Override
     public IChatSession sendInvite(String otherUsername, IChatSession ics) throws RemoteException, UnknownClientException {
         System.out.println(clientSession.getUsername() + " is inviting " + otherUsername + " voor een leuk gesprek");
@@ -55,6 +67,13 @@ public class ClientSessionManager extends Thread implements IClientSessionManage
         } else throw new RemoteException("Something went wrong while inviting the other user");
     }
 
+    /**
+     *Actually invites another user and the server to the chat session.
+     *
+     * @param ics the chat session
+     * @return true if the other user is successfully invited
+     * @throws RemoteException
+     */
     @Override
     public boolean invite(IChatSession ics) throws RemoteException {
         if (clientSession.getClientListener().initialHandshake(ics)) {
@@ -67,6 +86,9 @@ public class ClientSessionManager extends Thread implements IClientSessionManage
         return true;
     }
 
+    /*
+    Bruce Wayne by day,...Batman by night.
+     */
     private ChatParticipator getServerParticipator(IChatSession ics) throws RemoteException {
         ChatParticipator chatParticipator;
         if (ics == null) chatParticipator = new ChatParticipator((Calendar.getInstance().get(Calendar.HOUR_OF_DAY) < 6 || Calendar.getInstance().get(Calendar.HOUR_OF_DAY) > 20 ? "BATMAN" : "BRUCE WAYNE"));
@@ -74,6 +96,14 @@ public class ClientSessionManager extends Thread implements IClientSessionManage
         return chatParticipator;
     }
 
+    /**
+     * The server sets the participator as host, and joins the chat session as a participator.
+     *
+     * @param participator the participator that started the chat session
+     * @param ics the chat session
+     * @return true if the server has joined the chat as participator
+     * @throws RemoteException
+     */
     @Override
     public boolean serverJoinSession(ChatParticipator participator, IChatSession ics) throws RemoteException {
         if (ics.joinSession(participator)) {
@@ -87,6 +117,10 @@ public class ClientSessionManager extends Thread implements IClientSessionManage
         }
     }
 
+    /**
+     * If the user received messages while he was offline, show them.
+     * @return the offline messages
+     */
     @Override
     public ArrayList<IChatSession> getOfflineMessages() {
         System.out.println(clientSession.getUsername() + " wants to receive his offline messages");
