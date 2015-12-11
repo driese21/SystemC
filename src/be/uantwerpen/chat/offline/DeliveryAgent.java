@@ -1,11 +1,12 @@
 package be.uantwerpen.chat.offline;
 
+import be.uantwerpen.chat.ChatParticipatorKey;
+import be.uantwerpen.chat.Message;
 import be.uantwerpen.enums.ChatNotificationType;
 import be.uantwerpen.rmiInterfaces.IChatParticipator;
 
 import java.rmi.RemoteException;
-import java.util.ArrayList;
-import java.util.stream.Collectors;
+import java.util.HashSet;
 
 /**
  * Created by Dries on 21/11/2015.
@@ -13,20 +14,20 @@ import java.util.stream.Collectors;
  * This class delivers the messages to the participators.
  */
 public class DeliveryAgent extends Thread {
-    private ArrayList<IChatParticipator> participators;
+    private HashSet<ChatParticipatorKey> participators;
     private Message message;
-    private IChatParticipator newParticipator;
+    private ChatParticipatorKey cpk;
     private ChatNotificationType chatNotificationType;
 
-    public DeliveryAgent(ArrayList<IChatParticipator> participators, Message message, ChatNotificationType cnt) {
+    public DeliveryAgent(HashSet<ChatParticipatorKey> participators, Message message, ChatNotificationType cnt) {
         this.participators = participators;
         this.message = message;
         this.chatNotificationType = cnt;
     }
 
-    public DeliveryAgent(ArrayList<IChatParticipator> participators, IChatParticipator newParticipator, ChatNotificationType chatNotificationType) {
+    public DeliveryAgent(HashSet<ChatParticipatorKey> participators, ChatParticipatorKey cpk, ChatNotificationType chatNotificationType) {
         this.participators = participators;
-        this.newParticipator = newParticipator;
+        this.cpk = cpk;
         this.chatNotificationType = chatNotificationType;
     }
 
@@ -37,22 +38,21 @@ public class DeliveryAgent extends Thread {
      *
      */
     private void deliver() {
-        ArrayList<IChatParticipator> failedDelivery = new ArrayList<>(participators.size());
-        failedDelivery.addAll(participators.stream().filter(chatParticipator -> !deliver(chatParticipator)).collect(Collectors.toList()));
+        HashSet<ChatParticipatorKey> failedDelivery = new HashSet<>(participators.size());
+        participators.forEach(cpk -> { if (!deliver(cpk.getParticipator())) failedDelivery.add(cpk);});
         if (failedDelivery.size()==0) return;
-        int retries=0;
-        for (IChatParticipator participator : failedDelivery) {
-            while (retries<5) {
+        failedDelivery.forEach(cpk -> {
+            int retries = 0;
+            while (retries < 5) {
                 try {
-                    if (!deliver(participator)) System.out.println(participator + " is unreachable...");
+                    if (!deliver(cpk.getParticipator())) System.out.println(cpk.getUserName() + " is unreachable...");
                     retries++;
                     Thread.sleep(1000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
             }
-            retries=0;
-        }
+        });
     }
 
     /**
@@ -64,7 +64,7 @@ public class DeliveryAgent extends Thread {
     private boolean deliver(IChatParticipator participator) {
         try {
             if (message != null) participator.notifyListener(chatNotificationType, message);
-            else if (newParticipator != null) participator.notifyListener(chatNotificationType, newParticipator);
+            else if (cpk != null) participator.notifyListener(chatNotificationType, cpk);
             else System.out.println("Both message and participator are null");
         } catch (RemoteException e) {
             return false;

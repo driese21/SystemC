@@ -16,7 +16,7 @@ import java.util.ArrayList;
 public interface IClientSessionManager {
     IChatSession sendInvite(String otherUsername, IChatSession ics) throws RemoteException, UnknownClientException;
     boolean invite(IChatSession ics) throws RemoteException;
-    boolean serverJoinSession(ChatParticipator participator, IChatSession ics) throws RemoteException;
+    boolean serverJoinSession(ChatParticipator participator, IChatSession ics, boolean offlineSession) throws RemoteException;
     ArrayList<IChatSession> getOfflineMessages();
     void offlineMessagesRead();
     void offlineMessagesRead(IChatSession iChatSession);

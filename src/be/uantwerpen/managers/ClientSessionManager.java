@@ -1,5 +1,6 @@
 package be.uantwerpen.managers;
 
+import be.uantwerpen.chat.ChatParticipatorKey;
 import be.uantwerpen.chat.ChatParticipator;
 import be.uantwerpen.chat.offline.ChatSession;
 import be.uantwerpen.exceptions.UnknownClientException;
@@ -59,7 +60,7 @@ public class ClientSessionManager extends Thread implements IClientSessionManage
             ChatParticipator serverParticipator = getServerParticipator(null);
             int sessionId = chatServer.getSessionId();
             ChatSession offlineSession = new ChatSession(sessionId, serverParticipator, otherUsername);
-            if (serverJoinSession(serverParticipator,offlineSession)) chatServer.addOfflineSession(otherUsername,offlineSession);
+            if (serverJoinSession(serverParticipator,offlineSession, true)) chatServer.addOfflineSession(otherUsername,offlineSession);
             return offlineSession;
         }
         if (friend.getActiveSession().invite(ics)) {
@@ -78,7 +79,7 @@ public class ClientSessionManager extends Thread implements IClientSessionManage
     public boolean invite(IChatSession ics) throws RemoteException {
         if (clientSession.getClientListener().initialHandshake(ics)) {
             ChatParticipator chatParticipator = getServerParticipator(ics);
-            serverJoinSession(chatParticipator, ics);
+            serverJoinSession(chatParticipator, ics, false);
         } else {
             System.out.println("Something with wrong while handshaking my client...");
             return false;
@@ -105,9 +106,9 @@ public class ClientSessionManager extends Thread implements IClientSessionManage
      * @throws RemoteException
      */
     @Override
-    public boolean serverJoinSession(ChatParticipator participator, IChatSession ics) throws RemoteException {
-        if (ics.joinSession(participator)) {
-            participator.setHost(ics.getHost());
+    public boolean serverJoinSession(ChatParticipator participator, IChatSession ics, boolean offlineSession) throws RemoteException {
+        if (ics.joinSession(participator, offlineSession)) {
+            participator.setHost(new ChatParticipatorKey(ics.getHost().getUserName(), ics.getHost(), true));
             chatServer.addChatSession(ics, participator);
             ics.chooseChatName();
             return true;

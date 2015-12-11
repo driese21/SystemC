@@ -1,4 +1,4 @@
-package be.uantwerpen.chat.offline;
+package be.uantwerpen.chat;
 
 import be.uantwerpen.rmiInterfaces.IMessage;
 

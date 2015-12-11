@@ -1,6 +1,8 @@
 package be.uantwerpen.chat.offline;
 
+import be.uantwerpen.chat.ChatParticipatorKey;
 import be.uantwerpen.chat.ChatParticipator;
+import be.uantwerpen.chat.Message;
 import be.uantwerpen.enums.ChatNotificationType;
 import be.uantwerpen.rmiInterfaces.IChatParticipator;
 import be.uantwerpen.rmiInterfaces.IChatSession;
@@ -8,7 +10,7 @@ import be.uantwerpen.rmiInterfaces.IMessage;
 
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
-import java.util.ArrayList;
+import java.util.*;
 
 /**
  * Created by Dries on 21/11/2015.
@@ -20,20 +22,20 @@ import java.util.ArrayList;
  */
 public class ChatSession extends UnicastRemoteObject implements IChatSession {
     private int id;
-    private ArrayList<IChatParticipator> participators;
+    private HashSet<ChatParticipatorKey> participators;
     private ArrayList<Message> messages;
-    private IChatParticipator host;
+    private ChatParticipatorKey host;
     private String offlineUser;
 
     public ChatSession() throws RemoteException {
-        this.participators = new ArrayList<>();
+        this.participators = new HashSet<>();
         this.messages = new ArrayList<>();
     }
 
     public ChatSession(int id, ChatParticipator chatParticipator, String offlineUser) throws RemoteException {
         this();
         this.id = id;
-        this.host = chatParticipator;
+        this.host = new ChatParticipatorKey(chatParticipator.getUserName(), chatParticipator, true);
         this.offlineUser = offlineUser;
     }
 
@@ -76,8 +78,8 @@ public class ChatSession extends UnicastRemoteObject implements IChatSession {
      * @throws RemoteException
      */
     @Override
-    public void notifyParticipators(ChatNotificationType cnt, IChatParticipator newParticipator) throws RemoteException {
-        new Thread(new DeliveryAgent(participators, newParticipator, cnt)).start();
+    public void notifyParticipators(ChatNotificationType cnt, ChatParticipatorKey cpk) throws RemoteException {
+        new Thread(new DeliveryAgent(participators, cpk, cnt)).start();
     }
 
     /**
@@ -87,15 +89,33 @@ public class ChatSession extends UnicastRemoteObject implements IChatSession {
      * @throws RemoteException
      */
     @Override
-    public boolean joinSession(IChatParticipator participator) throws RemoteException {
+    public boolean joinSession(IChatParticipator participator, boolean host) throws RemoteException {
         if (participators.size() == 2) throw new RemoteException("Not more than 1 user is allowed in the offline ChatSession");
-        participators.add(participator);
+        participators.add( new ChatParticipatorKey(participator.getUserName(), participator, host));
         return true;
     }
 
     @Override
+    public boolean joinSession(ChatParticipatorKey cpk) throws RemoteException {
+        return false;
+    }
+
+    @Override
+    public boolean leaveSession(String username) throws RemoteException {
+        Iterator it = participators.iterator();
+        while (it.hasNext()) {
+            ChatParticipatorKey cpk = (ChatParticipatorKey) it.next();
+            if (cpk.getUserName().equalsIgnoreCase(username)) {
+                it.remove();
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
     public IChatParticipator getHost() throws RemoteException {
-        return host;
+        return host.getParticipator();
     }
 
     @Override
@@ -114,8 +134,10 @@ public class ChatSession extends UnicastRemoteObject implements IChatSession {
     public void chooseChatName() throws RemoteException { }
 
     @Override
-    public ArrayList<IChatParticipator> getOtherParticipators() throws RemoteException {
-        return participators;
+    public HashSet<IChatParticipator> getOtherParticipators() throws RemoteException {
+        HashSet<IChatParticipator> parts = new HashSet<>(participators.size());
+        participators.forEach(cpk -> parts.add(cpk.getParticipator()));
+        return parts;
     }
 
     /**
@@ -126,13 +148,12 @@ public class ChatSession extends UnicastRemoteObject implements IChatSession {
      * @throws RemoteException
      */
     @Override
-    public boolean hostQuit(IChatParticipator newHost) throws RemoteException {
+    public boolean hostQuit(String oldHost, ChatParticipatorKey newHost) throws RemoteException {
         throw new RemoteException("Can't change host of offline ChatSession");
     }
 
     private boolean isAllowedToSend(String userName) {
-        if (offlineUser.equalsIgnoreCase(userName)) return false;
-        return true;
+        return !offlineUser.equalsIgnoreCase(userName);
     }
 
     @Override

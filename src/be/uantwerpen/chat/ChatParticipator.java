@@ -1,7 +1,6 @@
 package be.uantwerpen.chat;
 
 import be.uantwerpen.enums.ChatNotificationType;
-import be.uantwerpen.interfaces.IChatManager;
 import be.uantwerpen.managers.CommandManager;
 import be.uantwerpen.rmiInterfaces.IChatParticipator;
 import be.uantwerpen.rmiInterfaces.IChatSession;
@@ -9,7 +8,6 @@ import be.uantwerpen.rmiInterfaces.IMessage;
 
 import java.rmi.server.UnicastRemoteObject;
 import java.rmi.RemoteException;
-import java.rmi.ServerException;
 
 /**
  * Created by Dries on 23/10/2015.
@@ -19,7 +17,7 @@ import java.rmi.ServerException;
 public class ChatParticipator extends UnicastRemoteObject implements IChatParticipator {
     private String username;
     private IChatSession chatSession;
-    private IChatParticipator host;
+    private ChatParticipatorKey host;
     private boolean changingHost=false;
 
     public ChatParticipator() throws RemoteException { }
@@ -33,11 +31,11 @@ public class ChatParticipator extends UnicastRemoteObject implements IChatPartic
         this.chatSession = chatSession;
     }
 
-    public IChatParticipator getHost() {
+    public ChatParticipatorKey getHost() {
         return host;
     }
 
-    public void setHost(IChatParticipator host) {
+    public void setHost(ChatParticipatorKey host) {
         this.host = host;
     }
 
@@ -62,9 +60,7 @@ public class ChatParticipator extends UnicastRemoteObject implements IChatPartic
     }
 
     @Override
-    public void notifyListener(ChatNotificationType cnt, IChatParticipator newParticipator) throws RemoteException {
-
-    }
+    public void notifyListener(ChatNotificationType cnt, ChatParticipatorKey cpk) throws RemoteException { }
 
     @Override
     public String getUserName() throws RemoteException {
@@ -72,8 +68,18 @@ public class ChatParticipator extends UnicastRemoteObject implements IChatPartic
     }
 
     @Override
+    public int getId() throws RemoteException {
+        return 0;
+    }
+
+    @Override
     public String getChatName() throws RemoteException {
         return chatSession.getChatName();
+    }
+
+    @Override
+    public IChatSession getChatSession() throws RemoteException {
+        return chatSession;
     }
 
     /**
@@ -101,7 +107,7 @@ public class ChatParticipator extends UnicastRemoteObject implements IChatPartic
     }
 
     /**
-     * Notification to server that newHost is hosting the chatsession
+     * Notification to server that newHost is hosting the ChatSession
      * @param newHost reference to the new host
      * @return true if the actual host is no longer alive, false if host is still reachable
      * @throws RemoteException
@@ -110,10 +116,10 @@ public class ChatParticipator extends UnicastRemoteObject implements IChatPartic
     public synchronized boolean hostChat(IChatParticipator newHost) throws RemoteException {
         System.out.println("ChatParticipator notifying that host has left");
         try {
-            if (host.alive()) return false;
+            if (host.getParticipator().alive()) return false;
         } catch (RemoteException re) {
             if (changingHost) throw new RemoteException("Someone is already taking over...");
-            host = newHost;
+            this.host = new ChatParticipatorKey(newHost.getUserName(), newHost, true);
             setChangingHost(true);
             return true;
         }
@@ -140,9 +146,9 @@ public class ChatParticipator extends UnicastRemoteObject implements IChatPartic
      */
     @Override
     public void hostChanged(IChatParticipator newHost, IChatSession newSession) throws RemoteException {
-        this.host = newHost;
+        this.host = new ChatParticipatorKey(newHost.getUserName(), newHost, true);
         this.chatSession = newSession;
         setChangingHost(false);
-        chatSession.joinSession(this);
+        this.chatSession.joinSession(this, false);
     }
 }
