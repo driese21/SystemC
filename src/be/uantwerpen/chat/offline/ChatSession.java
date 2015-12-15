@@ -15,8 +15,7 @@ import java.util.*;
 /**
  * Created by Dries on 21/11/2015.
  *
- * This class creates a new chat session. A chat session brings 'chat participators' together and is responsible for
- * pushing messages and notifications. This chat session is meant for offline messages, so it sends messages to the
+ * This class creates a new chat session. This chat session is meant for offline messages, so it sends messages to the
  * server. The server sends these messages to the intended client when he is online.
  *
  */

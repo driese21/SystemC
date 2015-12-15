@@ -12,7 +12,7 @@ import java.rmi.RemoteException;
 /**
  * Created by Dries on 23/10/2015.
  *
- * A chat participator is a client who has joined a chat session
+ * A chat participator is a server who has joined a chat session
  */
 public class ChatParticipator extends UnicastRemoteObject implements IChatParticipator {
     private String username;

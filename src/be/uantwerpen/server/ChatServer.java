@@ -15,6 +15,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 
 /**
+ * This class is the link between clients.
+ *
  * Created by Dries on 16/10/2015.
  */
 public class ChatServer {
@@ -44,6 +46,11 @@ public class ChatServer {
         this.sessionId = 0;
     }
 
+    /**
+     * Executed when a new user registers to SystemC
+     *
+     * @param client the new user
+     */
     public void addClient(Client client) {
         clients.put(getClientKey(client.getClientKey().getUsername()), client);
         try {
@@ -63,11 +70,24 @@ public class ChatServer {
         return getClient(username).getFriends().stream().map(this::getClient).collect(Collectors.toCollection(HashSet::new));
     }*/
 
+    /**
+     * Adds a participator to a chat session
+     *
+     * @param chatSession the chat session
+     * @param chatParticipator the participator
+     * @throws RemoteException
+     */
     public synchronized void addChatSession(IChatSession chatSession, IChatParticipator chatParticipator) throws RemoteException {
         chatParticipator.addChatSession(chatSession);
         chatSessions.put(chatSession, chatParticipator);
     }
 
+    /**
+     *Adds a participator to an offline chat session
+     *
+     * @param username the participator
+     * @param offlineSession the offline chat session
+     */
     public void addOfflineSession(String username, ChatSession offlineSession) {
         HashSet<ChatSession> sessions = offlineChatMessages.get(username);
         if (sessions == null) sessions = new HashSet<>();
@@ -75,6 +95,11 @@ public class ChatServer {
         offlineChatMessages.put(new ClientKey(username), sessions);
     }
 
+    /**
+     *
+     * @param username
+     * @return
+     */
     public ArrayList<ChatSession> getOfflineChatMessages(String username) {
         ClientKey ck = getClientKey(username);
         HashSet<ChatSession> offlineSessions = offlineChatMessages.get(ck);
@@ -82,12 +107,23 @@ public class ChatServer {
         else return new ArrayList<>(offlineChatMessages.get(ck));
     }
 
+    /**
+     * Prints the messages a user received while he was offline
+     *
+     * @param username the user
+     */
     public void offlineMessagesRead(String username) {
         System.out.println("Removing offline messages for " + username);
         if (offlineChatMessages.remove(getClientKey(username)) != null) System.out.println("User had offline ChatSessions, now removed");
         else System.out.println("User didn't have offline sessions, nothing happened");
     }
 
+    /**
+     * Deletes a user's offline messages if they are read.
+     *
+     * @param username the user
+     * @param iChatSession the chat session that contains the offline messages
+     */
     public void offlineMessagesRead(String username, IChatSession iChatSession) {
         ChatSession chatSession = (ChatSession) iChatSession;
         ClientKey ck = getClientKey(username);

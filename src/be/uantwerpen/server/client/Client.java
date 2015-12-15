@@ -12,6 +12,8 @@ import java.util.Comparator;
 import java.util.HashSet;
 
 /**
+ * This class looks up information about a client
+ *
  * Created by Dries on 16/10/2015.
  */
 @XmlRootElement(name = "client")
@@ -91,6 +93,13 @@ public class Client implements Comparator<Client> {
         return friends;
     }
 
+    /**
+     * Compare two usernames
+     *
+     * @param o1 client 1
+     * @param o2 client 2
+     * @return true if the o1's username equals o2's username
+     */
     @Override
     public int compare(Client o1, Client o2) {
         return o1.clientKey.getUsername().compareTo(o2.clientKey.getUsername());

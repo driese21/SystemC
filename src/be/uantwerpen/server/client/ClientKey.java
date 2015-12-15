@@ -6,6 +6,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
 /**
+ * Data class to ease searching in a HashSet
+ *
  * Created by Dries on 27/11/2015.
  */
 @XmlRootElement(name = "clientKey")
