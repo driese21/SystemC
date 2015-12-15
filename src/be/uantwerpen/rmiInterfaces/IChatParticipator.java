@@ -9,6 +9,8 @@ import java.util.ArrayList;
 import java.util.HashSet;
 
 /**
+ * A chat participator is a participator in a chat session
+ *
  * Created by Dries on 23/10/2015.
  */
 public interface IChatParticipator extends Remote {

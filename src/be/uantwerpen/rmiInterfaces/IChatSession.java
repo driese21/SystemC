@@ -10,6 +10,8 @@ import java.util.ArrayList;
 import java.util.HashSet;
 
 /**
+ * A chat session brings 'chat participators' together and is responsible for pushing messages and notifications.
+ *
  * Created by Dries on 16/10/2015.
  */
 public interface IChatSession extends Remote {

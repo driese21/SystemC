@@ -42,6 +42,15 @@ public class UserManager implements IUserManager {
         return true;
     }
 
+    /**
+     * Removes a friend
+     *
+     * @param username username removing the friend
+     * @param friendName the friend's name we want to remove
+     * @return Will return true if the friend has been removed, false if the users were never friends, otherwise throws error
+     * @throws RemoteException
+     * @throws UnknownClientException
+     */
     @Override
     public boolean removeFriend(String username, String friendName) throws RemoteException, UnknownClientException {
         if (username.equalsIgnoreCase(friendName)) throw new UnknownClientException("You can't remove yourself silly...");
@@ -72,7 +81,7 @@ public class UserManager implements IUserManager {
     public ArrayList<String> getFriends(String username) throws RemoteException {
         HashSet<Client> friends = chatServer.getClient(username).getFriends().stream().map(ck -> chatServer.getClient(ck)).collect(Collectors.toCollection(HashSet::new));
         ArrayList<String> userFriends = new ArrayList<>();
-        friends.forEach(fr -> userFriends.add(fr.getUsername()));
+        friends.forEach(fr -> userFriends.add(fr.getClientKey().getUsername()));
         return userFriends;
     }
 }

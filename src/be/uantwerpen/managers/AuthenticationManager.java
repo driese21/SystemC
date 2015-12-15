@@ -41,7 +41,7 @@ public class AuthenticationManager  {
         //if client does not exist, add him
         chatServer.addClient(c);
         System.out.println(c + " registered, logging in automatically.");
-        return login(c.getUsername(), password);
+        return login(c.getClientKey().getUsername(), password);
     }
 
     /**
@@ -58,7 +58,7 @@ public class AuthenticationManager  {
         Client c = chatServer.getClient(username);
         //System.out.println(username);
         if (c == null) throw new InvalidCredentialsException("User does not exist, try registering instead");
-        else if (c.getUsername().equalsIgnoreCase(username) && c.getPassword().equals(password)) {
+        else if (c.getClientKey().getUsername().equalsIgnoreCase(username) && c.getPassword().equals(password)) {
             //client exists, let's execute some checks
             ClientSession cs = c.getActiveSession();
             if (cs == null) {

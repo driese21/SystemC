@@ -23,6 +23,10 @@ public class ClientKey {
         this.hashCode = username.toUpperCase().hashCode();
     }
 
+    public String getUsername() {
+        return username;
+    }
+
     @Override
     public int hashCode() {
         return this.hashCode;

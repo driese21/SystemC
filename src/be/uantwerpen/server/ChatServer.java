@@ -7,15 +7,9 @@ import be.uantwerpen.rmiInterfaces.IChatSession;
 import be.uantwerpen.server.client.Client;
 import be.uantwerpen.server.client.ClientKey;
 
-import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
-import java.io.File;
 import java.io.IOException;
 import java.rmi.RemoteException;
-import java.util.*;
-import java.util.stream.Collectors;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -51,7 +45,7 @@ public class ChatServer {
     }
 
     public void addClient(Client client) {
-        clients.put(getClientKey(client.getUsername()), client);
+        clients.put(getClientKey(client.getClientKey().getUsername()), client);
         try {
             XMLHandler.writeClientToXML(client.getFullName(), client);
         } catch (JAXBException e) {

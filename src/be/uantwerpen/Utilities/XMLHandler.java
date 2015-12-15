@@ -56,7 +56,7 @@ public class XMLHandler {
                 } catch (JAXBException e) {
                     e.printStackTrace();
                 }
-                clients.put(new ClientKey(client.getUsername()), client);
+                clients.put(client.getClientKey(), client);
             }
         });
 
