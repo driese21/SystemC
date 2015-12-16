@@ -9,6 +9,8 @@ import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 
 /**
+ * This class accepts incoming authentications
+ *
  * Created by Dries on 4/11/2015.
  */
 public class ServerListener extends UnicastRemoteObject implements IServerListener {

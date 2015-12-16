@@ -9,6 +9,8 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 
 /**
+ * This is the main class
+ *
  * Created by Dries on 16/10/2015.
  */
 public class Server {

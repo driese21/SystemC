@@ -15,6 +15,8 @@ import java.nio.file.Paths;
 import java.util.HashMap;
 
 /**
+ * XML Serialisation of friend lists
+ *
  * Creator: Seb
  * Date: 28/11/2015
  */
@@ -32,6 +34,13 @@ public class XMLHandler {
         return xmlClients.getClients();
     }
 
+    /**
+     * Marshalls a friend list to an xml-file
+     *
+     * @param filename the xml file
+     * @param clients the clients in the friend list
+     * @throws JAXBException
+     */
     @Deprecated
     public static void writeClientsToXML(String filename,  HashMap<ClientKey, Client> clients) throws JAXBException {
         //Marshall to XML
@@ -45,6 +54,13 @@ public class XMLHandler {
         m.marshal(xmlClients, new File(filename));
     }
 
+    /**
+     * Unmarshalls a friend list from an xml-file
+     *
+     * @param filename the xml file
+     * @param clients the clients in the friend list
+     * @throws JAXBException
+     */
     public static HashMap<ClientKey, Client> readClientsXml() throws JAXBException, IOException {
         HashMap<ClientKey, Client> clients = new HashMap<>();
 

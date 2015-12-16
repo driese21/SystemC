@@ -16,6 +16,8 @@ import java.util.Calendar;
 import java.util.Date;
 
 /**
+ * This class contains methods to adjust a user's friend list
+ *
  * Created by Dries on 16/10/2015.
  */
 public class ClientSession extends UnicastRemoteObject implements IClientSession {
@@ -41,6 +43,14 @@ public class ClientSession extends UnicastRemoteObject implements IClientSession
         return true;
     }
 
+    /**
+     * Adds a friend
+     *
+     * @param friendName the friend
+     * @return true if the friend is added
+     * @throws RemoteException
+     * @throws UnknownClientException
+     */
     @Override
     public boolean addFriend(String friendName) throws RemoteException, UnknownClientException {
         return userManager.addFriend(username, friendName);
@@ -51,6 +61,14 @@ public class ClientSession extends UnicastRemoteObject implements IClientSession
         return userManager.getFriends(username);
     }
 
+    /**
+     * Deletes a friend
+     *
+     * @param friendName the friend
+     * @return true if the friend is deleted
+     * @throws RemoteException
+     * @throws UnknownClientException
+     */
     @Override
     public boolean deleteFriend(String friendName) throws RemoteException, UnknownClientException {
         return userManager.removeFriend(username, friendName);

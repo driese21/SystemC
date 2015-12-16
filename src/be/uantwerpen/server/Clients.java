@@ -9,6 +9,9 @@ import javax.xml.bind.annotation.XmlRootElement;
 import java.util.HashMap;
 
 /**
+ * This class makes a list of clients to be saved for later use.
+ * For example: if a user quits the application, he shouldn't have an empty friend list in his next session.
+ *
  * Creator: Seb
  * Date: 17/11/2015
  */
