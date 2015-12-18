@@ -46,12 +46,11 @@ public class ChatParticipator extends UnicastRemoteObject implements IChatPartic
 
     /**
      * If a message starts with "/", the server will read it as a command
-     * @param cnt the notification type
      * @param msg the message
      * @throws RemoteException
      */
     @Override
-    public void notifyListener(ChatNotificationType cnt, IMessage msg) throws RemoteException {
+    public void notifyListener(IMessage msg) throws RemoteException {
         if (msg.getMessage().startsWith("/") && !msg.getUsername().equalsIgnoreCase(username)) {
             String reply = CommandManager.parse(msg.getMessage());
             System.out.println(reply);
@@ -60,7 +59,10 @@ public class ChatParticipator extends UnicastRemoteObject implements IChatPartic
     }
 
     @Override
-    public void notifyListener(ChatNotificationType cnt, ChatParticipatorKey cpk) throws RemoteException { }
+    public void notifyListener(IChatParticipator chatParticipator, boolean host) throws RemoteException { }
+
+    @Override
+    public void notifyListener(String userName) throws RemoteException { }
 
     @Override
     public String getUserName() throws RemoteException {

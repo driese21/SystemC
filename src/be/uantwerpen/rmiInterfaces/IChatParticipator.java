@@ -14,9 +14,9 @@ import java.util.HashSet;
  * Created by Dries on 23/10/2015.
  */
 public interface IChatParticipator extends Remote {
-    void notifyListener(ChatNotificationType cnt, IMessage msg) throws RemoteException;
-    void notifyListener(ChatNotificationType cnt, ChatParticipatorKey cpk) throws RemoteException;
-    //void notifyListener(ChatNotificationType cnt, String userName) throws RemoteException;
+    void notifyListener(IMessage msg) throws RemoteException;
+    void notifyListener(IChatParticipator chatParticipator, boolean host) throws RemoteException;
+    void notifyListener(String userName) throws RemoteException;
     void addChatSession(IChatSession chatSession) throws RemoteException;
     IChatSession getChatSession() throws RemoteException;
     String getUserName() throws RemoteException;
