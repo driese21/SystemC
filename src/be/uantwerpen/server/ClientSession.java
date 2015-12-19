@@ -23,24 +23,16 @@ import java.util.Date;
 public class ClientSession extends UnicastRemoteObject implements IClientSession {
     private String username;
     private IClientListener clientListener;
-    private Date lastUpdate;
     private IUserManager userManager;
     private IClientSessionManager clientSessionManager;
 
     public ClientSession() throws RemoteException {
-        this.lastUpdate = Calendar.getInstance().getTime();
     }
 
     public ClientSession(String username, IUserManager userManager) throws RemoteException {
         this();
         this.username = username;
         this.userManager = userManager;
-    }
-
-    @Override
-    public boolean updateStatus() throws RemoteException {
-        this.lastUpdate = Calendar.getInstance().getTime();
-        return true;
     }
 
     /**

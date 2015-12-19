@@ -15,12 +15,14 @@ public class ServerManager {
     private ServerListener serverListener;
     private ChatServer chatServer;
     private AuthenticationManager authenticationManager;
+    private DiscoveryManager discoveryManager;
 
     public ServerManager() throws RemoteException, AlreadyBoundException {
         this.serverListener = new ServerListener();
         this.chatServer = new ChatServer();
         this.authenticationManager = new AuthenticationManager(chatServer);
         this.serverListener.setAuthenticationManager(authenticationManager);
+        this.discoveryManager = new DiscoveryManager();
         registerServer();
     }
 
@@ -31,7 +33,9 @@ public class ServerManager {
      * @throws AlreadyBoundException
      */
     private void registerServer() throws RemoteException, AlreadyBoundException {
+        System.out.println("Registering server ...");
         Registry registry = LocateRegistry.createRegistry(11337);
         registry.bind("ChatServer", serverListener);
+        System.out.println("Server registered");
     }
 }
