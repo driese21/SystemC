@@ -135,9 +135,4 @@ public class ClientSessionManager extends Thread implements IClientSessionManage
     public void offlineMessagesRead() {
         chatServer.offlineMessagesRead(clientSession.getUsername());
     }
-
-    @Override
-    public void offlineMessagesRead(IChatSession iChatSession) {
-        chatServer.offlineMessagesRead(clientSession.getUsername(), iChatSession);
-    }
 }

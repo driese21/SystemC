@@ -118,20 +118,6 @@ public class ChatServer {
         else System.out.println("User didn't have offline sessions, nothing happened");
     }
 
-    /**
-     * Deletes a user's offline messages if they are read.
-     *
-     * @param username the user
-     * @param iChatSession the chat session that contains the offline messages
-     */
-    public void offlineMessagesRead(String username, IChatSession iChatSession) {
-        ChatSession chatSession = (ChatSession) iChatSession;
-        ClientKey ck = getClientKey(username);
-        HashSet<ChatSession> chatSessions = offlineChatMessages.get(ck);
-        chatSessions.stream().filter(cs -> cs.equals(chatSession)).forEach(chatSessions::remove);
-        offlineChatMessages.put(ck, chatSessions);
-    }
-
     public int getSessionId() {
         return sessionId++;
     }

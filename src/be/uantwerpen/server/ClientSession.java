@@ -138,9 +138,4 @@ public class ClientSession extends UnicastRemoteObject implements IClientSession
     public void offlineMessagesRead() throws RemoteException {
         clientSessionManager.offlineMessagesRead();
     }
-
-    @Override
-    public void offlineMessagesRead(IChatSession iChatSession) throws RemoteException {
-        clientSessionManager.offlineMessagesRead(iChatSession);
-    }
 }

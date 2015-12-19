@@ -73,7 +73,6 @@ public class ChatSession extends UnicastRemoteObject implements IChatSession {
     /**
      * Sends a new message to chat participators when a new chat participator joins the session
      * @param cnt the notification type
-     * @param newParticipator the new chat participator
      * @throws RemoteException
      */
     @Override
