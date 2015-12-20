@@ -13,6 +13,7 @@ import be.uantwerpen.server.ClientSession;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Map;
 
 /**
  * Created by Dries on 26/10/2015.
@@ -25,10 +26,6 @@ public class ClientSessionManager extends Thread implements IClientSessionManage
     private ChatServer chatServer;
 
     protected ClientSessionManager() { }
-
-    /*protected ClientSessionManager(ClientSession clientSession) {
-        this.clientSession = clientSession;
-    }*/
 
     protected ClientSessionManager(ClientSession clientSession, ChatServer chatServer) {
         this.clientSession = clientSession;
@@ -134,5 +131,19 @@ public class ClientSessionManager extends Thread implements IClientSessionManage
     @Override
     public void offlineMessagesRead() {
         chatServer.offlineMessagesRead(clientSession.getUsername());
+    }
+
+    /**
+     * Notify friends that I'm available...
+     */
+    @Override
+    public void notifyFriends() throws RemoteException {
+        for (String friendName : clientSession.getFriends()) {
+            ClientSession friendSession = chatServer.getClient(friendName).getActiveSession();
+            if (friendSession != null && friendSession.userAlive()) {
+                System.out.println("Notifying " + friendSession.getUsername() + " that I'm online... (" + clientSession.getUsername() + ")");
+                friendSession.getClientListener().friendOnline(clientSession.getUsername(), clientSession.getClientListener(), false);
+            }
+        }
     }
 }

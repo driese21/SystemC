@@ -56,7 +56,6 @@ public class AuthenticationManager  {
      */
     public IClientSession login(String username, String password) throws RemoteException, InvalidCredentialsException {
         Client c = chatServer.getClient(username);
-        //System.out.println(username);
         if (c == null) throw new InvalidCredentialsException("User does not exist, try registering instead");
         else if (c.getClientKey().getUsername().equalsIgnoreCase(username) && c.getPassword().equals(password)) {
             //client exists, let's execute some checks

@@ -75,10 +75,12 @@ public class UserManager implements IUserManager {
         //notify user's ClientListener that their friend's list has been updated
         user.getActiveSession().getClientListener().friendListUpdated();
         friend.getActiveSession().getClientListener().friendListUpdated();
+        user.getActiveSession().getClientListener().friendOnline(friend.getClientKey().getUsername(), friend.getActiveSession().getClientListener(), false);
+        friend.getActiveSession().getClientListener().friendOnline(user.getClientKey().getUsername(), user.getActiveSession().getClientListener(), false);
     }
 
     @Override
-    public ArrayList<String> getFriends(String username) throws RemoteException {
+    public ArrayList<String> getFriends(String username) {
         HashSet<Client> friends = chatServer.getClient(username).getFriends().stream().map(ck -> chatServer.getClient(ck)).collect(Collectors.toCollection(HashSet::new));
         ArrayList<String> userFriends = new ArrayList<>();
         friends.forEach(fr -> userFriends.add(fr.getClientKey().getUsername()));

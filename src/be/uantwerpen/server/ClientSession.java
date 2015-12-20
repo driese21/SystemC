@@ -67,16 +67,6 @@ public class ClientSession extends UnicastRemoteObject implements IClientSession
     }
 
     /**
-     * When the user logs on, it will notify all his friends that he
-     * @param cnt What the user is marked as
-     * @throws RemoteException
-     */
-    @Override
-    public void forwardStatus(ClientStatusType cnt) throws RemoteException {
-
-    }
-
-    /**
      * This gets invoked by a client who wants to set up a chat with another client
      * @param otherUsername the username of the other user
      * @param ics the ChatSession created by the initiating client
@@ -103,11 +93,12 @@ public class ClientSession extends UnicastRemoteObject implements IClientSession
     }
 
     public IClientListener getClientListener() {
-        return clientListener;
+        return this.clientListener;
     }
 
     public void setClientListener(IClientListener ici) throws RemoteException {
-        clientListener = ici;
+        this.clientListener = ici;
+        clientSessionManager.notifyFriends();
     }
 
     public boolean userAlive() {

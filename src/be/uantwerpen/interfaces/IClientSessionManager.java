@@ -20,4 +20,5 @@ public interface IClientSessionManager {
     ArrayList<IChatSession> getOfflineMessages();
     void offlineMessagesRead();
     String getFullName();
+    void notifyFriends() throws RemoteException;
 }

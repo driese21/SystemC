@@ -11,5 +11,5 @@ import java.util.ArrayList;
 public interface IUserManager {
     boolean addFriend(String username, String friendName) throws RemoteException, UnknownClientException;
     boolean removeFriend(String username, String friendName) throws RemoteException, UnknownClientException;
-    ArrayList<String> getFriends(String username) throws RemoteException;
+    ArrayList<String> getFriends(String username);
 }
